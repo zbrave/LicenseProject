@@ -5,35 +5,56 @@ Created on Sat Oct 21 17:27:35 2017
 @author: user
 """
 
-import soundfile as sf
-signal, fs = sf.read(r'C:\Users\merta\Desktop\Dersler\bitirme\simpleLoop.wav')
+
+
+
 
 import numpy as np
+import librosa.util as util
+from librosa.core.spectrum import _spectrogram
+from librosa.core.time_frequency import fft_frequencies
 import matplotlib.pyplot as plt
+import librosa.display
 
-def spectral_centroid(x, samplerate=44100):
-    magnitudes = np.abs(np.fft.rfft(x)) # magnitudes of positive frequencies
-    #print(magnitudes)
-    length = len(x)
-    freqs = np.abs(np.fft.fftfreq(length, 1.0/samplerate)[:length//2+1]) # positive frequencies
-    #C, S = np.cos(freqs), np.sin(freqs)
-    #plt.plot(freqs, C)
-    #plt.plot(freqs, S)
-    #plt.show()
-    #print(freqs)
-    return np.sum(magnitudes*freqs) / np.sum(magnitudes) # return weighted mean
+ 
+# -- Spectral features -- #
+def spectral_centroid(y=None, sr=22050, S=None, n_fft=2048, hop_length=512,
+                      freq=None):
 
-spectral_centroid1=spectral_centroid(signal)
 
-#çözüm 2
-from numpy import abs, sum, linspace
-from numpy.fft import rfft
+    S, n_fft = _spectrogram(y=y, S=S, n_fft=n_fft, hop_length=hop_length)
 
-spectrum = abs(rfft(signal))
-normalized_spectrum = spectrum / sum(spectrum)  # like a probability mass function
-normalized_frequencies = linspace(0, 1, len(spectrum))
-spectral_centroid2 = sum(normalized_frequencies * normalized_spectrum)
-C, S = np.cos(normalized_frequencies), np.sin(normalized_frequencies)
-plt.plot(normalized_frequencies, C)
-plt.plot(normalized_frequencies, S)
-plt.show() #merto kaçtım ben görüşürüz aaaaaaabi
+    if not np.isrealobj(S):
+        raise ParameterError('Spectral centroid is only defined '
+                             'with real-valued input')
+    elif np.any(S < 0):
+        raise ParameterError('Spectral centroid is only defined '
+                             'with non-negative energies')
+
+    # Compute the center frequencies of each bin
+    if freq is None:
+        freq = fft_frequencies(sr=sr, n_fft=n_fft)
+
+    if freq.ndim == 1:
+        freq = freq.reshape((-1, 1))
+
+    # Column-normalize S
+    return np.sum(freq * util.normalize(S, norm=1, axis=0),
+                  axis=0, keepdims=True)
+
+
+y, sr = librosa.load('audio/simpleLoop.wav')
+cent=spectral_centroid(y=y, sr=sr)
+
+
+plt.figure()
+plt.subplot(2, 1, 1)
+plt.semilogy(cent.T, label='Spectral centroid')
+plt.ylabel('Hz')
+plt.xticks([])
+plt.xlim([0, cent.shape[-1]])
+plt.legend()
+plt.subplot(2, 1, 2)
+librosa.display.specshow(librosa.amplitude_to_db(S, ref=np.max), y_axis='log', x_axis='time')
+plt.title('log Power spectrogram')
+plt.tight_layout()
