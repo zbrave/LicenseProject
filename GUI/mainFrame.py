@@ -6,10 +6,10 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
-from PyQt5.QtGui import QIcon
+import os
+import vlc
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
 from PyQt5.QtCore import pyqtSlot
 
 class Ui_MainWindow(object):
@@ -38,19 +38,28 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        self.pushButton.clicked.connect(self.on_click)
+        self.pushButton.clicked.connect(self.openFileNamesDialog)
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
+        
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.pushButton.setText(_translate("MainWindow", "Upload"))
-        
-    @pyqtSlot()
-    def on_click(self):
-        print('PyQt5 button click')
 
+    def openFileNameDialog(self):    
+        fileName , _ = QtWidgets.QFileDialog.getOpenFileName(None, 'Open File', os.getenv('HOME'))
+        if fileName:
+            print(fileName)
+            vlc.MediaPlayer(fileName).play()
+            
+    def openFileNamesDialog(self):    
+        fileNames , _ = QtWidgets.QFileDialog.getOpenFileNames(None, 'Open File', os.getenv('HOME'))
+        if fileNames:
+            print(fileNames)
+            vlc.MediaPlayer(fileNames[1]).play()
+        
+            
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
