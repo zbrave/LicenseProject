@@ -75,7 +75,7 @@ def zero_crossings(y, threshold=1e-10, ref_magnitude=None, pad=True,
                   padding,
                   mode='constant',
                   constant_values=pad)
-
+'''    
 y, sr = librosa.load('audio/simpleLoop.wav')
 zcr = zero_crossing_rate(y);
-
+'''

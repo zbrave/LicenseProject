@@ -77,7 +77,7 @@ def spectral_contrast(y=None, sr=22050, S=None, n_fft=2048, hop_length=512,
     else:
         return power_to_db(peak) - power_to_db(valley)
 
-
+'''
 y, sr = librosa.load('audio/simpleLoop.wav')
 S = np.abs(librosa.stft(y))
 contrast = spectral_contrast(S=S, sr=sr)
@@ -95,3 +95,4 @@ plt.colorbar()
 plt.ylabel('Frequency bands')
 plt.title('Spectral contrast')
 plt.tight_layout()
+'''

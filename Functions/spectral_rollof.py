@@ -44,7 +44,7 @@ def spectral_rolloff(y=None, sr=22050, S=None, n_fft=2048, hop_length=512,
 
 
 
-
+'''
 #From time-series input
 y, sr = librosa.load('audio/simpleLoop.wav')
 rolloff = spectral_rolloff(y=y, sr=sr)
@@ -69,3 +69,4 @@ plt.subplot(2, 1, 2)
 librosa.display.specshow(librosa.amplitude_to_db(S, ref=np.max),y_axis='log', x_axis='time')
 plt.title('log Power spectrogram')
 plt.tight_layout()
+'''
