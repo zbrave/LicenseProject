@@ -35,7 +35,7 @@ def knn(trainingSet, testInstance, k, n):
 
 
     
-        
+'''        
 import sqlite3
 vt = sqlite3.connect('DB/DB.db')
 print ('Opened database successfully')
@@ -57,4 +57,4 @@ result=knn(trainData,testData,2,5)
 for i in result:
     print(veriler[i][1],i)
     
-    
+'''    
