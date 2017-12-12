@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'main.ui'
-#
-# Created by: PyQt5 UI code generator 5.6
-#
-# WARNING! All changes made in this file will be lost!
-
 import os
 import vlc
 import matplotlib.pyplot as plt
@@ -13,6 +5,7 @@ from mpl_toolkits.mplot3d import axes3d
 from matplotlib.collections import PolyCollection
 import librosa
 import matplotlib
+import Functions.knn as knn
 import numpy as np
 from librosa import display
 from librosa import core
@@ -101,14 +94,39 @@ class Ui_MainWindow(object):
             media = instance.media_new(self.files[self.songListWidget.currentRow()])
             player.set_media(media)
             player.play()
-            self.showFeatureOnNewTab()
+            
+            
+            import sqlite3
+            vt = sqlite3.connect(r'C:\Users\merta\Desktop\Dersler\bitirme\LicenseProject\GUI\Functions\DB\DB.db')
+            print ('Opened database successfully')
+            conn=vt.cursor()
+            
+            conn.execute("SELECT * FROM Feature")
+            
+            veriler = conn.fetchall()
+            
+            trainData=[]
+            
+            for x in veriler:
+                trainData.append(x[2:])
+                
+            
+            testData= trainData[0]   
+            result=knn.knn(trainData,testData,2,5)
+            names=[]
+            for i in result:
+                print(veriler[i][1],i)
+                names.append(veriler[i][1])        
+            conn.close() 
+            
+            self.showFeatureOnNewTab(names)
 #            # Adds new tab
 #            self.tab_3 = QtWidgets.QWidget()
 #            self.tab_3.setObjectName("tab_3")
 #            self.gridLayout_4 = QtWidgets.QGridLayout(self.tab_3)
 #            self.tabWidget.addTab(self.tab_3, "")
             
-    def showFeatureOnNewTab(self):
+    def showFeatureOnNewTab(self, names):
         # Adds new tab
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
@@ -120,7 +138,12 @@ class Ui_MainWindow(object):
         self.tablLayout1TableWidget.setObjectName("tablLayout1TableWidget")
         self.tabLayout1.addWidget(self.tablLayout1TableWidget)
         self.tablLayout1TableWidget.setRowCount(4)
-        self.tablLayout1TableWidget.setColumnCount(2)
+        self.tablLayout1TableWidget.setColumnCount(1)
+        i=0
+        for x in names:
+            self.tablLayout1TableWidget.setItem(i,0, QTableWidgetItem(x))
+            i=i+1
+        '''
         self.tablLayout1TableWidget.setItem(0,0, QTableWidgetItem("Cell (1,1)"))
         self.tablLayout1TableWidget.setItem(0,1, QTableWidgetItem("Cell (1,2)"))
         self.tablLayout1TableWidget.setItem(1,0, QTableWidgetItem("Cell (2,1)"))
@@ -129,6 +152,7 @@ class Ui_MainWindow(object):
         self.tablLayout1TableWidget.setItem(2,1, QTableWidgetItem("Cell (3,2)"))
         self.tablLayout1TableWidget.setItem(3,0, QTableWidgetItem("Cell (4,1)"))
         self.tablLayout1TableWidget.setItem(3,1, QTableWidgetItem("Cell (4,2)"))
+        '''
         self.gridLayout.addLayout(self.tabLayout1, 0, 0, 1, 1)
         sc = MyStaticMplCanvas(self.centralwidget, width=2, height=1, dpi=100, index=self.files[self.songListWidget.currentRow()])
         self.tabLayout1.addWidget(sc)
