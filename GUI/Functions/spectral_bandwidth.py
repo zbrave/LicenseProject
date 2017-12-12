@@ -11,7 +11,7 @@ Created on Tue Oct 24 17:51:55 2017
 
 import librosa
 import numpy as np
-from spectral_centroid import spectral_centroid #our spectral_centroid.py
+from Functions.spectral_centroid import spectral_centroid
 from librosa.core.time_frequency import fft_frequencies
 import librosa.util as util
 from librosa.core.spectrum import _spectrogram

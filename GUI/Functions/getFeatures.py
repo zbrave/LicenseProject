@@ -8,12 +8,12 @@ Created on Tue Dec 12 22:15:51 2017
 
 def features(dirpath):
     #our feture functions.
-    import zero_crossing_rate 
-    import MFCC
-    import spectral_centroid
-    import spectral_contrast
-    import spectral_rollof
-    import spectral_bandwidth
+    import Functions.zero_crossing_rate as zero_crossing_rate
+    import Functions.MFCC as MFCC
+    import Functions.spectral_centroid as spectral_centroid
+    import Functions.spectral_contrast as spectral_contrast
+    import Functions.spectral_rollof as spectral_rollof
+    import Functions.spectral_bandwidth as spectral_bandwidth
     
     
     
@@ -89,5 +89,5 @@ def features(dirpath):
     
     
     #conn.execute("INSERT INTO Feature(NAME,mZcr,vZcr,mCentroid,vCentroid,mContrast,vContrast,mBandwidth,vBandwidth,mRollof,vRollof,mMFFC1,vMFFC1,mMFFC2,vMFFC2,mMFFC3,vMFFC3,mMFFC4,vMFFC4,mMFFC5,vMFFC5,mMFFC6,vMFFC6,mMFFC7,vMFFC7,mMFFC8,vMFFC8,mMFFC9,vMFFC9,mMFFC10,vMFFC10,mMFFC11,vMFFC11,mMFFC12,vMFFC12,mMFFC13,vMFFC13,)  VALUES ('"+name+"', "+zcr+", "+vzcr+", "+centroid+", "+vcentroid+", "+contrast+", "+vcontrast+", "+rollof+", "+vrollof+", "+bandwidth+", "+vbandwidth+", "+mfcc1+", "+vmfcc1+", "+mfcc2+", "+vmfcc2+", "+mfcc3+", "+vmfcc3+" "+mfcc4+", "+vmfcc4+", "+mfcc5+", "+vmfcc5+", "+mfcc6+", "+vmfcc6+", "+mfcc7+", "+vmfcc7+", "+mfcc8+", "+vmfcc8+", "+mfcc9+", "+vmfcc9+", "+mfcc10+", "+vmfcc10+", "+mfcc11+", "+vmfcc11+", "+mfcc12+", "+vmfcc12+", "+mfcc13+", "+vmfcc13+" )")
-    List=[name,zcr,vzcr,centroid,vcentroid,contrast,vcontrast,rollof,vrollof,bandwidth,vbandwidth,mfcc1,vmfcc1,mfcc2,vmfcc2,mfcc3,vmfcc3,mfcc4,vmfcc4,mfcc5,vmfcc5,mfcc6,vmfcc6,mfcc7,vmfcc7,mfcc8,vmfcc8,mfcc9,vmfcc9,mfcc10,vmfcc10,mfcc11,vmfcc11,mfcc12,vmfcc12,mfcc13,vmfcc13]
+    List=[zcr,vzcr,centroid,vcentroid,contrast,vcontrast,rollof,vrollof,bandwidth,vbandwidth,mfcc1,vmfcc1,mfcc2,vmfcc2,mfcc3,vmfcc3,mfcc4,vmfcc4,mfcc5,vmfcc5,mfcc6,vmfcc6,mfcc7,vmfcc7,mfcc8,vmfcc8,mfcc9,vmfcc9,mfcc10,vmfcc10,mfcc11,vmfcc11,mfcc12,vmfcc12,mfcc13,vmfcc13]
     return List

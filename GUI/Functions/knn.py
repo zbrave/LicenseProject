@@ -4,14 +4,14 @@ Created on Wed Dec  6 15:17:04 2017
 
 @author: user
 """
-"""
-import zero_crossing_rate
-import MFCC
-import spectral_centroid
-import spectral_contrast
-import spectral_rollof
-import spectral_bandwidth
-"""
+
+import Functions.zero_crossing_rate as zero_crossing_rate
+import Functions.MFCC as MFCC
+import Functions.spectral_centroid as spectral_centroid
+import Functions.spectral_contrast as spectral_contrast
+import Functions.spectral_rollof as spectral_rollof
+import Functions.spectral_bandwidth as spectral_bandwidth
+
 import math
 def euclideanDistance(instance1, instance2,n):
 	distance = 0
@@ -33,8 +33,6 @@ def knn(trainingSet, testInstance, k, n):
 		neighbors.append(distances[x][1])
 	return neighbors
 
-def deneme():
-    print('denemee')
     
 '''        
 import sqlite3

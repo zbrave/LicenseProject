@@ -81,7 +81,14 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QTableWidget" name="tablLayout1TableWidget"/>
+           <widget class="QTableWidget" name="tablLayout1TableWidget">
+            <property name="gridStyle">
+             <enum>Qt::SolidLine</enum>
+            </property>
+            <property name="sortingEnabled">
+             <bool>false</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -110,8 +117,20 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="fileOpMenu">
+    <property name="title">
+     <string>File operations</string>
+    </property>
+    <addaction name="actionNew_Data_Import"/>
+   </widget>
+   <addaction name="fileOpMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionNew_Data_Import">
+   <property name="text">
+    <string>New Data Import ..</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
