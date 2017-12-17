@@ -1,0 +1,10 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>Music-Library-icon.png</file>
+    <file>add-icon.png</file>
+    <file>Save-icon.png</file>
+    <file>Pause-icon.png</file>
+    <file>Play-icon.png</file>
+    <file>Stop-icon.png</file>
+  </qresource>
+</RCC>

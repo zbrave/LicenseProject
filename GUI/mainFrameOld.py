@@ -1,7 +1,5 @@
 import os
 import vlc
-import time
-import traceback, sys
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
 from matplotlib.collections import PolyCollection
@@ -9,7 +7,6 @@ import librosa
 import matplotlib
 import Functions.knn as knn
 import Functions.getFeatures as Features
-import Functions.dbImport as dbImport
 import numpy as np
 from librosa import display
 from librosa import core
@@ -17,88 +14,11 @@ from librosa import util
 from librosa.util.exceptions import ParameterError
 matplotlib.use("Qt5Agg")
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog, QVBoxLayout, QSizePolicy, QTableWidgetItem
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtCore import pyqtSlot
 
-'''
-K değişkeni parametrik
-Thread
-DockWidget(Grafik,Veritabanı,)
-'''
-
-class WorkerSignals(QObject):
-    '''
-    Defines the signals available from a running worker thread.
-
-    Supported signals are:
-
-    finished
-        No data
-
-    error
-        `tuple` (exctype, value, traceback.format_exc() )
-
-    result
-        `object` data returned from processing, anything
-
-    progress
-        `int` indicating % progress
-
-    '''
-    finished = pyqtSignal()
-    error = pyqtSignal(tuple)
-    result = pyqtSignal(object)
-    progress = pyqtSignal()
-
-
-class Worker(QRunnable):
-    '''
-    Worker thread
-
-    Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
-
-    :param callback: The function callback to run on this worker thread. Supplied args and 
-                     kwargs will be passed through to the runner.
-    :type callback: function
-    :param args: Arguments to pass to the callback function
-    :param kwargs: Keywords to pass to the callback function
-
-    '''
-
-    def __init__(self, fn, *args, **kwargs):
-        super(Worker, self).__init__()
-        # Store constructor arguments (re-used for processing)
-        self.fn = fn
-        self.args = args
-        self.kwargs = kwargs
-        self.signals = WorkerSignals()
-
-        # Add the callback to our kwargs
-        kwargs['progress_callback'] = self.signals.progress
-
-    @pyqtSlot()
-    def run(self):
-        '''
-        Initialise the runner function with passed args, kwargs.
-        '''
-
-        # Retrieve args/kwargs here; and fire processing using them
-        try:
-            result = self.fn(*self.args, **self.kwargs)
-        except:
-            traceback.print_exc()
-            exctype, value = sys.exc_info()[:2]
-            self.signals.error.emit((exctype, value, traceback.format_exc()))
-        else:
-            self.signals.result.emit(result)  # Return the result of the processing
-        finally:
-            self.signals.finished.emit()  # Done
-            
-            
-            
 class Ui_MainWindow(object):
     files = []
     def setupUi(self, MainWindow):
@@ -186,31 +106,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        # Thread operations
-        self.threadpool = QThreadPool()
-        print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
 
-    def progress_fn(self):
-        self.statusbar.showMessage('Database operations going on ...')
-
-    def execute_this_fn(self, progress_callback):
-        progress_callback.emit()
-        result, veriler = self.connectDB()
-        return result, veriler
-
-    def thread_complete(self):
-        self.statusbar.showMessage('Database operations completed.')
-        
-    def threadop(self):
-        # Pass the function to execute
-        worker = Worker(self.execute_this_fn) # Any other args, kwargs are passed to the run function
-        worker.signals.result.connect(self.showFeatureOnNewTab)
-        worker.signals.finished.connect(self.thread_complete)
-        worker.signals.progress.connect(self.progress_fn)
-
-        # Execute
-        self.threadpool.start(worker)
-        
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -231,10 +127,8 @@ class Ui_MainWindow(object):
                 files.append(fileNames[i])
                 x = fileNames[i].split('/')
                 names.append(x[-1:][0])
-        #return files, names
-        for i in range(len(names)):
-            dbImport.dbImport(names[i],files[i])
-        
+        return files, names
+    
     def openFileNamesDialog(self): 
         fileNames , _ = QtWidgets.QFileDialog.getOpenFileNames(None, 'Open File', os.getenv('HOME'), "Musics (*.mp3 *.wav)")
         if fileNames:
@@ -250,22 +144,21 @@ class Ui_MainWindow(object):
             media = instance.media_new(self.files[self.songListWidget.currentRow()])
             player.set_media(media)
             player.play()
-            if self.threadpool.activeThreadCount() == 0:
-                self.threadop()
-                
-    def addnewTab(self):
-            # Adds new tab
-            self.tab_3 = QtWidgets.QWidget()
-            self.tab_3.setObjectName("tab_3")
-            self.gridLayout_4 = QtWidgets.QGridLayout(self.tab_3)
-            self.tabWidget.addTab(self.tab_3, "")
-        
+            
+            result, veriler = self.connectDB()
+            self.showFeatureOnNewTab(result, veriler)
+#            # Adds new tab
+#            self.tab_3 = QtWidgets.QWidget()
+#            self.tab_3.setObjectName("tab_3")
+#            self.gridLayout_4 = QtWidgets.QGridLayout(self.tab_3)
+#            self.tabWidget.addTab(self.tab_3, "")
+            
     def connectDB(self):
         import sqlite3
         vt = sqlite3.connect(r'C:\Users\merta\Desktop\Dersler\bitirme\LicenseProject\GUI\Functions\DB\DB.db')
-        self.statusbar.showMessage('Opened database successfully')
+        print ('Opened database successfully')
         conn=vt.cursor()
-        self.statusbar.showMessage('Executing tables ...')
+        
         conn.execute("SELECT * FROM Feature")
         
         veriler = conn.fetchall()
@@ -274,7 +167,7 @@ class Ui_MainWindow(object):
         
         for x in veriler:
             trainData.append(x[2:])
-        self.statusbar.showMessage('Extracting features ...')   
+            
         testData=Features.features(self.files[self.songListWidget.currentRow()])
         #testData= trainData[0]
         
@@ -283,11 +176,11 @@ class Ui_MainWindow(object):
         for i in result:
             print(veriler[i][1],i)
             names.append(veriler[i][1])        
-        conn.close()
+        conn.close() 
         return result,veriler
 
         
-    def showFeatureOnNewTab(self, result):
+    def showFeatureOnNewTab(self, result, veriler):
        # Adds new tab
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
@@ -309,9 +202,9 @@ class Ui_MainWindow(object):
             i=i+1
         '''
         i=0
-        for x in result[0]:
+        for x in result:
             for j in range(36):
-                item = QTableWidgetItem(str(result[1][x][j+1]))
+                item = QTableWidgetItem(str(veriler[x][j+1]))
                 item.setFlags(QtCore.Qt.ItemIsEnabled)
                 self.tablLayout1TableWidget.setItem(i,j, item)
             i += 1
