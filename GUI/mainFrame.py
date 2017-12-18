@@ -262,7 +262,7 @@ class Ui_MainWindow(object):
         
     def connectDB(self):
         import sqlite3
-        vt = sqlite3.connect(r'C:\Users\merta\Desktop\Dersler\bitirme\LicenseProject\GUI\Functions\DB\DB.db')
+        vt = sqlite3.connect('Functions\DB\DB.db') #r'C:\Users\merta\Desktop\Dersler\bitirme\LicenseProject\GUI\Functions\DB\DB.db'
         self.statusbar.showMessage('Opened database successfully')
         conn=vt.cursor()
         self.statusbar.showMessage('Executing tables ...')
@@ -278,7 +278,7 @@ class Ui_MainWindow(object):
         testData=Features.features(self.files[self.songListWidget.currentRow()])
         #testData= trainData[0]
         
-        result=knn.knn(trainData,testData,2,36)
+        result=knn.knn(trainData,testData,2,72)
         names=[]
         for i in result:
             print(veriler[i][1],i)
