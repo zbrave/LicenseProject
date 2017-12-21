@@ -590,6 +590,7 @@ class Ui_MainWindow(object):
         self.threadpool = QThreadPool()
         # On Launch Run this func.
         self.loadMusicOnLaunch()
+        self.initFeaturesTable()
         print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
 
     def progress_fn(self):
@@ -692,7 +693,38 @@ class Ui_MainWindow(object):
             self.tab_3.setObjectName("tab_3")
             self.gridLayout_4 = QtWidgets.QGridLayout(self.tab_3)
             self.tabWidget.addTab(self.tab_3, "")
+    
+    def initFeaturesTable(self):
+        # Adds new tab
+        self.tablLayout1TableWidget.setRowCount(1)
+        self.tablLayout1TableWidget.setColumnCount(73)
+        headers = ['Song','mZCR','vZCR','mCent','vCent','mCont','vCont','mBand','vBand','mRoll','vRoll','mMFCC1','vMFCC1','mMFCC2','vMFCC2','mMFCC3','vMFCC3','mMFCC4','vMFCC4','mMFCC5','vMFCC5','mMFCC6','vMFCC6','mMFCC7','vMFCC7','mMFCC8','vMFCC8','mMFCC9','vMFCC9','mMFCC10','vMFCC10','mMFCC11','vMFCC11','mMFCC12','vMFCC12','mMFCC13','vMFCC13','mCqt1','vCqt1','mCqt2','vCqt2','mCqt3','vCqt3','mCqt4','vCqt4','mCqt5','vCqt5','mCqt6','vCqt6','mCqt7','vCqt7','mCqt8','vCqt8','mCqt9','vCqt9','mCqt10','vCqt10','mCqt11','vCqt12','mCqt12','vCqt12','mTon1','vTon2','mTon2','vTon2','mTon3','vTon3','mTon4','vTon4','mTon5','vTon5','mTon6','vTon6']
+        self.tablLayout1TableWidget.setHorizontalHeaderLabels(headers)
+        i=0
+        '''
+        for x in names:
+            self.tablLayout1TableWidget.setItem(i,0, QTableWidgetItem(x))
+            i=i+1
+        '''
         
+        import sqlite3
+        vt = sqlite3.connect('Functions\DB\DB.db') #r'C:\Users\merta\Desktop\Dersler\bitirme\LicenseProject\GUI\Functions\DB\DB.db'
+        self.statusbar.showMessage('Opened database successfully')
+        conn=vt.cursor()
+        self.statusbar.showMessage('Database features was loaded.')
+        conn.execute("SELECT * FROM Feature")
+        
+        veriler = conn.fetchall()
+        conn.close()
+        i=0
+        for x in veriler:
+            for j in range(1,74):
+                item = QTableWidgetItem(str(x[j]))
+                item.setFlags(QtCore.Qt.ItemIsEnabled)
+                self.tablLayout1TableWidget.setItem(i,j-1, item)
+            i += 1
+            self.tablLayout1TableWidget.setRowCount(i+1)
+    
     def connectDB(self):
         import sqlite3
         vt = sqlite3.connect('Functions\DB\DB.db') #r'C:\Users\merta\Desktop\Dersler\bitirme\LicenseProject\GUI\Functions\DB\DB.db'
@@ -755,22 +787,17 @@ class Ui_MainWindow(object):
         i=0
         for x in result[0]:
             for j in range(36):
-                item = QTableWidgetItem(str(result[1][x][j+1]))
-                item.setFlags(QtCore.Qt.ItemIsEnabled)
-                self.tablLayout1TableWidget.setItem(i,j, item)
+#                item = QTableWidgetItem(str(result[1][x][j+1]))
+#                item.setFlags(QtCore.Qt.ItemIsEnabled)
+#                self.tablLayout1TableWidget.setItem(i,j, item)
+                self.label_3 = QtWidgets.QLabel(self.centralwidget)
+                self.sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
+                self.label_3.setSizePolicy(self.sizePolicy)
+                self.label_3.setMaximumSize(QtCore.QSize(16777215, 25))
+                self.verticalLayout_2.addWidget(self.label_3)
+                self.label_3.setText('asdklasjdkasd')
             i += 1
-            
-            
-        '''
-        self.tablLayout1TableWidget.setItem(0,0, QTableWidgetItem("Cell (1,1)"))
-        self.tablLayout1TableWidget.setItem(0,1, QTableWidgetItem("Cell (1,2)"))
-        self.tablLayout1TableWidget.setItem(1,0, QTableWidgetItem("Cell (2,1)"))
-        self.tablLayout1TableWidget.setItem(1,1, QTableWidgetItem("Cell (2,2)"))
-        self.tablLayout1TableWidget.setItem(2,0, QTableWidgetItem("Cell (3,1)"))
-        self.tablLayout1TableWidget.setItem(2,1, QTableWidgetItem("Cell (3,2)"))
-        self.tablLayout1TableWidget.setItem(3,0, QTableWidgetItem("Cell (4,1)"))
-        self.tablLayout1TableWidget.setItem(3,1, QTableWidgetItem("Cell (4,2)"))
-        '''
+
         self.gridLayout.addLayout(self.tabLayout1, 0, 0, 1, 1)
         sc = MyStaticMplCanvas(self.centralwidget, width=2, height=1, dpi=100, index=self.files[self.songListWidget.currentRow()])
         self.tabLayout1.addWidget(sc)
