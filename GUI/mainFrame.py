@@ -423,7 +423,6 @@ instance = vlc.Instance()
 player = instance.media_player_new()
 global files
 if __name__ == "__main__":
-    import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
