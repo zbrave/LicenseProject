@@ -80,7 +80,6 @@ class Worker2(QRunnable):
         super(Worker2, self).__init__()
         # Store constructor arguments (re-used for processing)
         self.fn = fn
-        print('fn: ', fn)
         self.args = args
         self.kwargs = kwargs
         self.signals = WorkerSignals2()
@@ -149,7 +148,6 @@ class Worker(QRunnable):
         super(Worker, self).__init__()
         # Store constructor arguments (re-used for processing)
         self.fn = fn
-        print('fn: ', fn)
         self.args = args
         self.kwargs = kwargs
         self.signals = WorkerSignals()
@@ -734,11 +732,11 @@ class Ui_MainWindow(object):
     def libLoadThread(self, progress_callback):
         for file in self.files:
             print(file)
-            y, sr = librosa.load(file)
-            self.y.append(y)
-            self.sr.append(sr)
-            print('y: ',len(y))
-            print('sr: ',sr)
+#            y, sr = librosa.load(file)
+#            self.y.append(y)
+#            self.sr.append(sr)
+#            print('y: ',len(y))
+#            print('sr: ',sr)
             progress_callback.emit(file, self.files.index(file))
             
     def libLoadProgress(self, file, index):
@@ -750,7 +748,7 @@ class Ui_MainWindow(object):
         self.statusbar.showMessage('All musics loaded.')
         
     def libLoadResult(self):
-        print('result')
+        print(self.files)
         
     def newDataImp(self):
         fileNames , _ = QtWidgets.QFileDialog.getOpenFileNames(None, 'Open File', os.getenv('HOME'), "Musics (*.mp3 *.wav)")
