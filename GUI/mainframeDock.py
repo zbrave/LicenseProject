@@ -36,74 +36,6 @@ K değişkeni parametrik
 Thread
 DockWidget(Grafik,Veritabanı,)
 '''
-
-class WorkerSignals2(QObject):
-    '''
-    Defines the signals available from a running worker thread.
-
-    Supported signals are:
-
-    finished
-        No data
-
-    error
-        `tuple` (exctype, value, traceback.format_exc() )
-
-    result
-        `object` data returned from processing, anything
-
-    progress
-        `int` indicating % progress
-
-    '''
-    finished = pyqtSignal()
-    error = pyqtSignal(tuple)
-    result = pyqtSignal(object)
-    progress = pyqtSignal(object,int)
-
-
-class Worker2(QRunnable):
-    '''
-    Worker thread
-
-    Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
-
-    :param callback: The function callback to run on this worker thread. Supplied args and 
-                     kwargs will be passed through to the runner.
-    :type callback: function
-    :param args: Arguments to pass to the callback function
-    :param kwargs: Keywords to pass to the callback function
-
-    '''
-
-    def __init__(self, fn, *args, **kwargs):
-        super(Worker2, self).__init__()
-        # Store constructor arguments (re-used for processing)
-        self.fn = fn
-        self.args = args
-        self.kwargs = kwargs
-        self.signals = WorkerSignals2()
-
-        # Add the callback to our kwargs
-        kwargs['progress_callback'] = self.signals.progress
-
-    @pyqtSlot()
-    def run(self):
-        '''
-        Initialise the runner function with passed args, kwargs.
-        '''
-
-        # Retrieve args/kwargs here; and fire processing using them
-        try:
-            result = self.fn(*self.args, **self.kwargs)
-        except:
-            traceback.print_exc()
-            exctype, value = sys.exc_info()[:2]
-            self.signals.error.emit((exctype, value, traceback.format_exc()))
-        else:
-            self.signals.result.emit(result)  # Return the result of the processing
-        finally:
-            self.signals.finished.emit()  # Done
             
 class WorkerSignals(QObject):
     '''
@@ -174,8 +106,6 @@ class Worker(QRunnable):
             self.signals.finished.emit()  # Done
 
 class Ui_MainWindow(object):
-    y = []
-    sr = []
     files = []
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -720,35 +650,9 @@ class Ui_MainWindow(object):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         dir_path = dir_path + '\Musics\*.mp3'
         self.files = glob.glob(dir_path)
-       
-        worker = Worker2(self.libLoadThread) # Any other args, kwargs are passed to the run function
-        worker.signals.result.connect(self.libLoadResult)
-        worker.signals.finished.connect(self.libLoadFinish)
-        worker.signals.progress.connect(self.libLoadProgress)
-        # Execute
-        self.threadpool.start(worker)
-        
-            
-    def libLoadThread(self, progress_callback):
         for file in self.files:
-            print(file)
-#            y, sr = librosa.load(file)
-#            self.y.append(y)
-#            self.sr.append(sr)
-#            print('y: ',len(y))
-#            print('sr: ',sr)
-            progress_callback.emit(file, self.files.index(file))
-            
-    def libLoadProgress(self, file, index):
-        x = file.split('\\')
-        self.songListWidget.addItems(x[-1:])
-        self.statusbar.showMessage('Loading musics : %d / %d'% (index,len(self.files)))
-        
-    def libLoadFinish(self):
-        self.statusbar.showMessage('All musics loaded.')
-        
-    def libLoadResult(self):
-        print(self.files)
+            x = file.split('\\')
+            self.songListWidget.addItems(x[-1:])
         
     def newDataImp(self):
         fileNames , _ = QtWidgets.QFileDialog.getOpenFileNames(None, 'Open File', os.getenv('HOME'), "Musics (*.mp3 *.wav)")
@@ -821,6 +725,8 @@ class Ui_MainWindow(object):
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
         self.gridLayout = QtWidgets.QGridLayout(self.tab)
+        ''' Şarkı seçildikten sonra seçilen değişirse
+        Yeni tab adı o an seçili olanı alıyor. '''
         self.tabWidget.addTab(self.tab, self.files[self.songListWidget.currentRow()].split('\\')[-1:][0])
         self.tabLayout1 = QtWidgets.QGridLayout()
         self.tabLayout1.setObjectName("tabLayout1")
@@ -857,7 +763,7 @@ class Ui_MainWindow(object):
         self.tablLayout1TableWidget.setItem(3,1, QTableWidgetItem("Cell (4,2)"))
         '''
         self.gridLayout.addLayout(self.tabLayout1, 0, 0, 1, 1)
-        sc = MyStaticMplCanvas(self.centralwidget, width=2, height=1, dpi=100, index=[self.y[self.songListWidget.currentRow()], self.sr[self.songListWidget.currentRow()]])
+        sc = MyStaticMplCanvas(self.centralwidget, width=2, height=1, dpi=100, index=self.files[self.songListWidget.currentRow()])
         self.tabLayout1.addWidget(sc)
 #       self.tabWidget.setCurrentIndex(len(sel))
         self.tabWidget.setCurrentWidget(self.tab)
@@ -874,7 +780,7 @@ class Ui_MainWindow(object):
 class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
 
-    def __init__(self, parent=None, width=5, height=4, dpi=100, index=[0, 0]):
+    def __init__(self, parent=None, width=5, height=4, dpi=100, index=0):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         self.compute_initial_figure(index)
@@ -894,9 +800,7 @@ class MyStaticMplCanvas(MyMplCanvas):
     """Simple canvas with a sine plot."""
 
     def compute_initial_figure(self, index):
-#        y, sr = librosa.load(index)
-        y = index[0]
-        sr = index[1]
+        y, sr = librosa.load(index)
         max_points=5e4
         x_axis='time'
         offset=0.0
