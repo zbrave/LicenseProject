@@ -1,112 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\main.ui'
+# Form implementation generated from reading ui file 'main.ui'
 #
 # Created by: PyQt5 UI code generator 5.6
 #
 # WARNING! All changes made in this file will be lost!
 
-import os
-import vlc
-import time
-import traceback, sys
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import axes3d
-from matplotlib.collections import PolyCollection
-import librosa
-import matplotlib
-import Functions.knn as knn
-import Functions.getFeatures as Features
-import Functions.dbImport as dbImport
-import numpy as np
-from librosa import display
-from librosa import core
-from librosa import util
-from librosa.util.exceptions import ParameterError
-matplotlib.use("Qt5Agg")
 from PyQt5 import QtCore, QtGui, QtWidgets
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-
-'''
-K değişkeni parametrik
-Thread
-DockWidget(Grafik,Veritabanı,)
-'''
-            
-class WorkerSignals(QObject):
-    '''
-    Defines the signals available from a running worker thread.
-
-    Supported signals are:
-
-    finished
-        No data
-
-    error
-        `tuple` (exctype, value, traceback.format_exc() )
-
-    result
-        `object` data returned from processing, anything
-
-    progress
-        `int` indicating % progress
-
-    '''
-    finished = pyqtSignal()
-    error = pyqtSignal(tuple)
-    result = pyqtSignal(object)
-    progress = pyqtSignal()
-
-
-class Worker(QRunnable):
-    '''
-    Worker thread
-
-    Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
-
-    :param callback: The function callback to run on this worker thread. Supplied args and 
-                     kwargs will be passed through to the runner.
-    :type callback: function
-    :param args: Arguments to pass to the callback function
-    :param kwargs: Keywords to pass to the callback function
-
-    '''
-
-    def __init__(self, fn, *args, **kwargs):
-        super(Worker, self).__init__()
-        # Store constructor arguments (re-used for processing)
-        self.fn = fn
-        self.args = args
-        self.kwargs = kwargs
-        self.signals = WorkerSignals()
-
-        # Add the callback to our kwargs
-        kwargs['progress_callback'] = self.signals.progress
-
-    @pyqtSlot()
-    def run(self):
-        '''
-        Initialise the runner function with passed args, kwargs.
-        '''
-
-        # Retrieve args/kwargs here; and fire processing using them
-        try:
-            result = self.fn(*self.args, **self.kwargs)
-        except:
-            traceback.print_exc()
-            exctype, value = sys.exc_info()[:2]
-            self.signals.error.emit((exctype, value, traceback.format_exc()))
-        else:
-            self.signals.result.emit(result)  # Return the result of the processing
-        finally:
-            self.signals.finished.emit()  # Done
 
 class Ui_MainWindow(object):
-    files = []
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(864, 900)
@@ -536,28 +438,28 @@ class Ui_MainWindow(object):
         self.gridLayout_5.setObjectName("gridLayout_5")
         self.tabWidget = QtWidgets.QTabWidget(self.dockWidgetContents_3)
         self.tabWidget.setObjectName("tabWidget")
-#        self.tab = QtWidgets.QWidget()
-#        self.tab.setObjectName("tab")
-#        self.gridLayout_3 = QtWidgets.QGridLayout(self.tab)
-#        self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
-#        self.gridLayout_3.setObjectName("gridLayout_3")
-#        self.tabLayout1 = QtWidgets.QGridLayout()
-#        self.tabLayout1.setObjectName("tabLayout1")
-#        self.tabLayout1Label = QtWidgets.QLabel(self.tab)
-#        self.tabLayout1Label.setAlignment(QtCore.Qt.AlignCenter)
-#        self.tabLayout1Label.setObjectName("tabLayout1Label")
-#        self.tabLayout1.addWidget(self.tabLayout1Label, 1, 0, 1, 1)
-#        self.gridLayout_3.addLayout(self.tabLayout1, 0, 0, 1, 1)
-#        self.tabWidget.addTab(self.tab, "")
-#        self.tab_2 = QtWidgets.QWidget()
-#        self.tab_2.setObjectName("tab_2")
-#        self.gridLayout_4 = QtWidgets.QGridLayout(self.tab_2)
-#        self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
-#        self.gridLayout_4.setObjectName("gridLayout_4")
-#        self.tabLayout2 = QtWidgets.QGridLayout()
-#        self.tabLayout2.setObjectName("tabLayout2")
-#        self.gridLayout_4.addLayout(self.tabLayout2, 0, 0, 1, 1)
-#        self.tabWidget.addTab(self.tab_2, "")
+        self.tab = QtWidgets.QWidget()
+        self.tab.setObjectName("tab")
+        self.gridLayout_3 = QtWidgets.QGridLayout(self.tab)
+        self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.tabLayout1 = QtWidgets.QGridLayout()
+        self.tabLayout1.setObjectName("tabLayout1")
+        self.tabLayout1Label = QtWidgets.QLabel(self.tab)
+        self.tabLayout1Label.setAlignment(QtCore.Qt.AlignCenter)
+        self.tabLayout1Label.setObjectName("tabLayout1Label")
+        self.tabLayout1.addWidget(self.tabLayout1Label, 1, 0, 1, 1)
+        self.gridLayout_3.addLayout(self.tabLayout1, 0, 0, 1, 1)
+        self.tabWidget.addTab(self.tab, "")
+        self.tab_2 = QtWidgets.QWidget()
+        self.tab_2.setObjectName("tab_2")
+        self.gridLayout_4 = QtWidgets.QGridLayout(self.tab_2)
+        self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout_4.setObjectName("gridLayout_4")
+        self.tabLayout2 = QtWidgets.QGridLayout()
+        self.tabLayout2.setObjectName("tabLayout2")
+        self.gridLayout_4.addLayout(self.tabLayout2, 0, 0, 1, 1)
+        self.tabWidget.addTab(self.tab_2, "")
         self.gridLayout_5.addWidget(self.tabWidget, 0, 0, 1, 1)
         self.dockWidget_3.setWidget(self.dockWidgetContents_3)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(4), self.dockWidget_3)
@@ -575,44 +477,11 @@ class Ui_MainWindow(object):
         self.fileOpMenu.addAction(self.actionPrepared_Data_Import_csv)
         self.menubar.addAction(self.fileOpMenu.menuAction())
 
-        self.songListWidget.setCurrentRow(-1)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        self.stopSongButton.clicked.connect(self.stopSong)
-        self.pauseSongButton.clicked.connect(self.pauseSong)
-        self.playSongButton.clicked.connect(self.playSong)
-#        self.loadButton.clicked.connect(self.openFileNamesDialog)
-        self.actionNew_Data_Import.triggered.connect(self.newDataImp)
         self.retranslateUi(MainWindow)
+        self.songListWidget.setCurrentRow(-1)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        
-        # Thread operations
-        self.threadpool = QThreadPool()
-        # On Launch Run this func.
-        self.loadMusicOnLaunch()
-        print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
 
-    def progress_fn(self):
-        self.statusbar.showMessage('Database operations going on ...')
-
-    def execute_this_fn(self, progress_callback):
-        progress_callback.emit()
-        result, veriler = self.connectDB()
-        return result, veriler
-
-    def thread_complete(self):
-        self.statusbar.showMessage('Database operations completed.')
-        
-    def threadop(self):
-        # Pass the function to execute
-        worker = Worker(self.execute_this_fn) # Any other args, kwargs are passed to the run function
-        worker.signals.result.connect(self.showFeatureOnNewTab)
-        worker.signals.finished.connect(self.thread_complete)
-        worker.signals.progress.connect(self.progress_fn)
-
-        # Execute
-        self.threadpool.start(worker)
-        
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -638,239 +507,10 @@ class Ui_MainWindow(object):
         self.radioButton_2.setText(_translate("MainWindow", "Kmeans"))
         self.label_8.setText(_translate("MainWindow", "k value:"))
         self.lineEdit_5.setText(_translate("MainWindow", "5"))
-#        self.tabLayout1Label.setText(_translate("MainWindow", "TextLabel"))
-#        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Tab 1"))
-#        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2"))
+        self.tabLayout1Label.setText(_translate("MainWindow", "TextLabel"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Tab 1"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2"))
         self.actionNew_Data_Import.setText(_translate("MainWindow", "New Data Import (mp3) "))
         self.actionPrepared_Data_Import_csv.setText(_translate("MainWindow", "Prepared Data Import (csv) "))
 
-
-    def loadMusicOnLaunch(self):
-        import glob
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        dir_path = dir_path + '\Musics\*.mp3'
-        self.files = glob.glob(dir_path)
-        for file in self.files:
-            x = file.split('\\')
-            self.songListWidget.addItems(x[-1:])
-        
-    def newDataImp(self):
-        fileNames , _ = QtWidgets.QFileDialog.getOpenFileNames(None, 'Open File', os.getenv('HOME'), "Musics (*.mp3 *.wav)")
-        files = []
-        names = []
-        if fileNames:
-#            Just keep file names not path
-            for i in range(0,len(fileNames)):
-                files.append(fileNames[i])
-                x = fileNames[i].split('/')
-                names.append(x[-1:][0])
-        #return files, names
-        for i in range(len(names)):
-            dbImport.dbImport(names[i],files[i])
-        
-    def openFileNamesDialog(self): 
-        fileNames , _ = QtWidgets.QFileDialog.getOpenFileNames(None, 'Open File', os.getenv('HOME'), "Musics (*.mp3 *.wav)")
-        if fileNames:
-#            Just keep file names not path
-            for i in range(0,len(fileNames)):
-                self.files.append(fileNames[i])
-                x = fileNames[i].split('/')
-                self.songListWidget.addItems(x[-1:])
-            print(self.files)
-            
-    def playSong(self):
-        if self.songListWidget.currentItem():
-            media = instance.media_new(self.files[self.songListWidget.currentRow()])
-            player.set_media(media)
-            player.play()
-            if self.threadpool.activeThreadCount() == 0:
-                self.threadop()
-                
-    def addnewTab(self):
-            # Adds new tab
-            self.tab_3 = QtWidgets.QWidget()
-            self.tab_3.setObjectName("tab_3")
-            self.gridLayout_4 = QtWidgets.QGridLayout(self.tab_3)
-            self.tabWidget.addTab(self.tab_3, "")
-        
-    def connectDB(self):
-        import sqlite3
-        vt = sqlite3.connect('Functions\DB\DB.db') #r'C:\Users\merta\Desktop\Dersler\bitirme\LicenseProject\GUI\Functions\DB\DB.db'
-        self.statusbar.showMessage('Opened database successfully')
-        conn=vt.cursor()
-        self.statusbar.showMessage('Executing tables ...')
-        conn.execute("SELECT * FROM Feature")
-        
-        veriler = conn.fetchall()
-        
-        trainData=[]
-        
-        for x in veriler:
-            trainData.append(x[2:])
-        self.statusbar.showMessage('Extracting features ...')  
-        
-        tmpF=self.files[self.songListWidget.currentRow()].split('\\')
-        fName=tmpF[-1:]
-        
-        index=0
-        for x in veriler:
-            print(x[1])
-            if x[1] == fName[0]:
-                testData= trainData[index]
-                
-            index=index + 1
-        
-        result=knn.knn(trainData,testData,2,72)
-        names=[]
-        for i in result:
-            print(veriler[i][1],i)
-            names.append(veriler[i][1])        
-        conn.close()
-        return result,veriler
-
-        
-    def showFeatureOnNewTab(self, result):
-       # Adds new tab
-        self.tab = QtWidgets.QWidget()
-        self.tab.setObjectName("tab")
-        self.gridLayout = QtWidgets.QGridLayout(self.tab)
-        ''' Şarkı seçildikten sonra seçilen değişirse
-        Yeni tab adı o an seçili olanı alıyor. '''
-        self.tabWidget.addTab(self.tab, self.files[self.songListWidget.currentRow()].split('\\')[-1:][0])
-        self.tabLayout1 = QtWidgets.QGridLayout()
-        self.tabLayout1.setObjectName("tabLayout1")
-#        self.tablLayout1TableWidget = QtWidgets.QTableWidget(self.tab)
-#        self.tablLayout1TableWidget.setObjectName("tablLayout1TableWidget")
-#        self.tabLayout1.addWidget(self.tablLayout1TableWidget)
-        self.tablLayout1TableWidget.setRowCount(4)
-        self.tablLayout1TableWidget.setColumnCount(36)
-        headers = ['Song','mZCR','vZCR','mCent','vCent','mCont','vCont','mBand','vBand','mRoll','vRoll','mMFCC1','vMFCC1','mMFCC2','vMFCC2','mMFCC3','vMFCC3','mMFCC4','vMFCC4','mMFCC5','vMFCC5','mMFCC6','vMFCC6','mMFCC7','vMFCC7','mMFCC8','vMFCC8','mMFCC9','vMFCC9','mMFCC10','vMFCC10','mMFCC11','vMFCC11','mMFCC12','vMFCC12','mMFCC13','vMFCC13']
-        self.tablLayout1TableWidget.setHorizontalHeaderLabels(headers)
-        i=0
-        '''
-        for x in names:
-            self.tablLayout1TableWidget.setItem(i,0, QTableWidgetItem(x))
-            i=i+1
-        '''
-        i=0
-        for x in result[0]:
-            for j in range(36):
-                item = QTableWidgetItem(str(result[1][x][j+1]))
-                item.setFlags(QtCore.Qt.ItemIsEnabled)
-                self.tablLayout1TableWidget.setItem(i,j, item)
-            i += 1
-            
-            
-        '''
-        self.tablLayout1TableWidget.setItem(0,0, QTableWidgetItem("Cell (1,1)"))
-        self.tablLayout1TableWidget.setItem(0,1, QTableWidgetItem("Cell (1,2)"))
-        self.tablLayout1TableWidget.setItem(1,0, QTableWidgetItem("Cell (2,1)"))
-        self.tablLayout1TableWidget.setItem(1,1, QTableWidgetItem("Cell (2,2)"))
-        self.tablLayout1TableWidget.setItem(2,0, QTableWidgetItem("Cell (3,1)"))
-        self.tablLayout1TableWidget.setItem(2,1, QTableWidgetItem("Cell (3,2)"))
-        self.tablLayout1TableWidget.setItem(3,0, QTableWidgetItem("Cell (4,1)"))
-        self.tablLayout1TableWidget.setItem(3,1, QTableWidgetItem("Cell (4,2)"))
-        '''
-        self.gridLayout.addLayout(self.tabLayout1, 0, 0, 1, 1)
-        sc = MyStaticMplCanvas(self.centralwidget, width=2, height=1, dpi=100, index=self.files[self.songListWidget.currentRow()])
-        self.tabLayout1.addWidget(sc)
-#       self.tabWidget.setCurrentIndex(len(sel))
-        self.tabWidget.setCurrentWidget(self.tab)
-
-        
-    def pauseSong(self):
-        if self.songListWidget.currentItem():
-            player.pause()
-            
-    def stopSong(self):
-        if self.songListWidget.currentItem():
-            player.stop()
-            
-class MyMplCanvas(FigureCanvas):
-    """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
-
-    def __init__(self, parent=None, width=5, height=4, dpi=100, index=0):
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
-        self.compute_initial_figure(index)
-
-        FigureCanvas.__init__(self, fig)
-        self.setParent(parent)
-
-        FigureCanvas.setSizePolicy(self,
-                                   QtWidgets.QSizePolicy.Expanding,
-                                   QtWidgets.QSizePolicy.Expanding)
-        FigureCanvas.updateGeometry(self)
-
-    def compute_initial_figure(self, index):
-        pass
-    
-class MyStaticMplCanvas(MyMplCanvas):
-    """Simple canvas with a sine plot."""
-
-    def compute_initial_figure(self, index):
-        y, sr = librosa.load(index)
-        max_points=5e4
-        x_axis='time'
-        offset=0.0
-        max_sr=1000
-        util.valid_audio(y, mono=False)
-
-        if not (isinstance(max_sr, int) and max_sr > 0):
-            raise ParameterError('max_sr must be a non-negative integer')
-    
-        target_sr = sr
-        hop_length = 1
-    
-        if max_points is not None:
-            if max_points <= 0:
-                raise ParameterError('max_points must be strictly positive')
-    
-            if max_points < y.shape[-1]:
-                target_sr = min(max_sr, (sr * y.shape[-1]) // max_points)
-    
-            hop_length = sr // target_sr
-    
-            if y.ndim == 1:
-                y = util.frame(y, hop_length).max(axis=0)
-            else:
-                y = np.vstack([util.frame(_, hop_length).max(axis=0) for _ in y])
-    
-        if y.ndim > 1:
-            y_top = y[0]
-            y_bottom = -y[1]
-        else:
-            y_top = y
-            y_bottom = -y
-    
-        axes = plt.gca()
-    
-#        kwargs.setdefault('color', next(axes._get_lines.prop_cycler)['color'])
-    
-        locs = offset + core.frames_to_time(np.arange(len(y_top)),
-                                            sr=sr,
-                                            hop_length=hop_length)
-        self.axes.fill_between(locs, y_bottom, y_top)
-    
-        axes.set_xlim([locs.min(), locs.max()])
-        if x_axis == 'time':
-            axes.xaxis.set_major_formatter(display.TimeFormatter(lag=False))
-            axes.xaxis.set_label_text('Time')
-        elif x_axis is None or x_axis in ['off', 'none']:
-            axes.set_xticks([])
-        else:
-            raise ParameterError('Unknown x_axis value: {}'.format(x_axis))
-
-
-import Icons.icons            
-#VLC Player conf.          
-instance = vlc.Instance()
-player = instance.media_player_new()
-global files
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
+import Button-ico_rc

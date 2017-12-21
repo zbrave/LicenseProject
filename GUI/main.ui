@@ -962,7 +962,7 @@ background-repeat: none;
            </property>
            <property name="styleSheet">
             <string notr="true">background-color: transparent;
-border-image: url(:/icons/Stop-icon.png);
+border-image: url(:/icons/Pause-icon.png);
 background: none;
 border: none;
 background-repeat: none;
@@ -995,7 +995,7 @@ background-repeat: none;
            </property>
            <property name="styleSheet">
             <string notr="true">background-color: transparent;
-border-image: url(:/icons/Pause-icon.png);
+border-image: url(:/icons/Stop-icon.png);
 background: none;
 border: none;
 background-repeat: none;
@@ -1038,12 +1038,16 @@ background-repeat: none;
          <item>
           <widget class="QLabel" name="label_8">
            <property name="text">
-            <string>TextLabel</string>
+            <string>k value:</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_5"/>
+          <widget class="QLineEdit" name="lineEdit_5">
+           <property name="text">
+            <string>5</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
