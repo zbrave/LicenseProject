@@ -208,10 +208,10 @@ class Ui_MainWindow(object):
         self.label_3.setAlignment(QtCore.Qt.AlignCenter)
         self.label_3.setObjectName("label_3")
         self.verticalLayout_2.addWidget(self.label_3)
-        self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
-        self.progressBar.setProperty("value", 24)
-        self.progressBar.setObjectName("progressBar")
-        self.verticalLayout_2.addWidget(self.progressBar)
+#        self.label_9 = QtWidgets.QLabel(self.centralwidget)
+#        self.label_9.setAlignment(QtCore.Qt.AlignCenter)
+#        self.label_9.setObjectName("label_9")
+#        self.verticalLayout_2.addWidget(self.label_9)
         self.gridLayout_7.addLayout(self.verticalLayout_2, 0, 0, 1, 1)
         self.gridLayout_6.addLayout(self.gridLayout_7, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -771,37 +771,47 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tab, self.files[self.songListWidget.currentRow()].split('\\')[-1:][0])
         self.tabLayout1 = QtWidgets.QGridLayout()
         self.tabLayout1.setObjectName("tabLayout1")
-#        self.tablLayout1TableWidget = QtWidgets.QTableWidget(self.tab)
-#        self.tablLayout1TableWidget.setObjectName("tablLayout1TableWidget")
-#        self.tabLayout1.addWidget(self.tablLayout1TableWidget)
-        self.tablLayout1TableWidget.setRowCount(4)
-        self.tablLayout1TableWidget.setColumnCount(36)
-        headers = ['Song','mZCR','vZCR','mCent','vCent','mCont','vCont','mBand','vBand','mRoll','vRoll','mMFCC1','vMFCC1','mMFCC2','vMFCC2','mMFCC3','vMFCC3','mMFCC4','vMFCC4','mMFCC5','vMFCC5','mMFCC6','vMFCC6','mMFCC7','vMFCC7','mMFCC8','vMFCC8','mMFCC9','vMFCC9','mMFCC10','vMFCC10','mMFCC11','vMFCC11','mMFCC12','vMFCC12','mMFCC13','vMFCC13']
-        self.tablLayout1TableWidget.setHorizontalHeaderLabels(headers)
-        i=0
-        '''
-        for x in names:
-            self.tablLayout1TableWidget.setItem(i,0, QTableWidgetItem(x))
-            i=i+1
-        '''
+        for i in reversed(range(self.verticalLayout_2.count())): 
+            self.verticalLayout_2.itemAt(i).widget().setParent(None)
+        # Recomm. Label Text Rewrite
+        self.label_3 = QtWidgets.QLabel(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
+        self.label_3.setSizePolicy(sizePolicy)
+        self.label_3.setMaximumSize(QtCore.QSize(16777215, 25))
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
+        self.label_3.setPalette(palette)
+        font = QtGui.QFont()
+        font.setFamily("Gill Sans Ultra Bold")
+        self.label_3.setFont(font)
+        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_3.setObjectName("label_3")
+        self.label_3.setText('Recommendations')
+        self.verticalLayout_2.addWidget(self.label_3)
         i=0
         for x in result[0]:
-            for j in range(36):
-#                item = QTableWidgetItem(str(result[1][x][j+1]))
-#                item.setFlags(QtCore.Qt.ItemIsEnabled)
-#                self.tablLayout1TableWidget.setItem(i,j, item)
-                self.label_3 = QtWidgets.QLabel(self.centralwidget)
-                self.sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
-                self.label_3.setSizePolicy(self.sizePolicy)
-                self.label_3.setMaximumSize(QtCore.QSize(16777215, 25))
-                self.verticalLayout_2.addWidget(self.label_3)
-                self.label_3.setText('asdklasjdkasd')
+            self.label_3 = QtWidgets.QLabel(self.centralwidget)
+            self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+            self.label_3.setMaximumSize(QtCore.QSize(16777215, 25))
+            self.verticalLayout_2.addWidget(self.label_3)
+            
+            self.label_3.setText(str(i+1)+"-) " +result[1][x][1])
             i += 1
 
         self.gridLayout.addLayout(self.tabLayout1, 0, 0, 1, 1)
         sc = MyStaticMplCanvas(self.centralwidget, width=2, height=1, dpi=100, index=self.files[self.songListWidget.currentRow()])
         self.tabLayout1.addWidget(sc)
-#       self.tabWidget.setCurrentIndex(len(sel))
         self.tabWidget.setCurrentWidget(self.tab)
 
         
