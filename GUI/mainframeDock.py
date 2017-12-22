@@ -618,13 +618,13 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.checkBox_8.setText(_translate("MainWindow", "Tonnetz"))
-        self.checkBox_7.setText(_translate("MainWindow", "MFCC"))
-        self.checkBox.setText(_translate("MainWindow", "Chroma CQT"))
-        self.checkBox_2.setText(_translate("MainWindow", "Spectral Rollof"))
-        self.checkBox_4.setText(_translate("MainWindow", "Spectral Contrast"))
-        self.checkBox_3.setText(_translate("MainWindow", "Spectral Bandwith"))
-        self.checkBox_5.setText(_translate("MainWindow", "Spectral Centroid"))
-        self.checkBox_6.setText(_translate("MainWindow", "Zero Crossing"))
+        self.checkBox_7.setText(_translate("MainWindow", "Chroma cqt"))
+        self.checkBox.setText(_translate("MainWindow", "Zero Crossing Rate"))
+        self.checkBox_2.setText(_translate("MainWindow", "Spectral Centroid"))
+        self.checkBox_4.setText(_translate("MainWindow", "Spectral Bandwidth"))
+        self.checkBox_3.setText(_translate("MainWindow", "Spectral Contrast"))
+        self.checkBox_5.setText(_translate("MainWindow", "Spectral Rolloff"))
+        self.checkBox_6.setText(_translate("MainWindow", "MFCC"))
         self.label_4.setText(_translate("MainWindow", "TextLabel"))
         self.label_5.setText(_translate("MainWindow", "TextLabel"))
         self.label_7.setText(_translate("MainWindow", "TextLabel"))
@@ -638,7 +638,7 @@ class Ui_MainWindow(object):
         self.radioButton.setText(_translate("MainWindow", "kNN"))
         self.radioButton_2.setText(_translate("MainWindow", "Kmeans"))
         self.label_8.setText(_translate("MainWindow", "k value:"))
-        self.lineEdit_5.setText(_translate("MainWindow", "5"))
+        self.lineEdit_5.setText(_translate("MainWindow", "3"))
 #        self.tabLayout1Label.setText(_translate("MainWindow", "TextLabel"))
 #        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Tab 1"))
 #        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2"))
@@ -736,13 +736,74 @@ class Ui_MainWindow(object):
         veriler = conn.fetchall()
         
         trainData=[]
+        checkList=np.zeros(8)
+        checkList[0]=self.checkBox.checkState()
+        checkList[1]=self.checkBox_2.checkState()
+        checkList[2]=self.checkBox_3.checkState()
+        checkList[3]=self.checkBox_4.checkState()
+        checkList[4]=self.checkBox_5.checkState()
+        checkList[5]=self.checkBox_6.checkState()
+        checkList[6]=self.checkBox_7.checkState()
+        checkList[7]=self.checkBox_8.checkState()
+        print(self.checkBox.checkState())
+        print(self.checkBox_2.checkState())
+        print(self.checkBox_3.checkState())
+        print(self.checkBox_4.checkState())
+        print(self.checkBox_5.checkState())
+        print(self.checkBox_6.checkState())
+        print(self.checkBox_7.checkState())
+        print(self.checkBox_8.checkState())
         
+        j=0
+        y=2
+        tmpList=np.zeros(72)
         for x in veriler:
-            trainData.append(x[2:])
+            y=2
+            j=0
+            tmpList=np.zeros(72)
+            for i in range(5):
+                if checkList[i]!=0:
+                    print(i,"aldi")
+                    tmpList[j]=x[y]
+                    tmpList[j+1]=x[y+1]
+                    j=j+2
+                y=y+2
+            i=5
+            y=12
+            if checkList[i]!=0:
+                print(i,"aldi")
+                while y<38:
+                    tmpList[j]=x[y]
+                    j=j+1
+                    y=y+1
+            else:
+                y=38
+            i=i+1
+            if checkList[i]!=0:
+                print(i,"aldi")
+                while y<62:
+                    tmpList[j]=x[y]
+                    j=j+1
+                    y=y+1
+            else:
+                y=62
+            i=i+1
+            if checkList[i]!=0:
+                print(i,"aldi")
+                while y<74:
+                    tmpList[j]=x[y]
+                    j=j+1
+                    y=y+1
+            realList=tmpList[:j]
+            print('j-----',j)    
+            trainData.append(realList)
+                
         self.statusbar.showMessage('Extracting features ...')  
         
         tmpF=self.files[self.songListWidget.currentRow()].split('\\')
         fName=tmpF[-1:]
+        
+        
         
         index=0
         for x in veriler:
@@ -751,8 +812,9 @@ class Ui_MainWindow(object):
                 testData= trainData[index]
                 
             index=index + 1
-        
-        result=knn.knn(trainData,testData,2,72)
+        k=self.lineEdit_5.text()
+        k=int(k)
+        result=knn.knn(trainData,testData,k,j)
         names=[]
         for i in result:
             print(veriler[i][1],i)
