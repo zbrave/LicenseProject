@@ -141,8 +141,13 @@ class Ui_MainWindow(object):
         self.label_3.setAlignment(QtCore.Qt.AlignCenter)
         self.label_3.setObjectName("label_3")
         self.verticalLayout_2.addWidget(self.label_3)
-        spacerItem = QtWidgets.QSpacerItem(20, 80, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.MinimumExpanding)
-        self.verticalLayout_2.addItem(spacerItem)
+        self.predictsTableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.predictsTableWidget.setStyleSheet("")
+        self.predictsTableWidget.setGridStyle(QtCore.Qt.SolidLine)
+        self.predictsTableWidget.setObjectName("predictsTableWidget")
+        self.predictsTableWidget.setColumnCount(0)
+        self.predictsTableWidget.setRowCount(0)
+        self.verticalLayout_2.addWidget(self.predictsTableWidget)
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
         self.checkBox_6 = QtWidgets.QCheckBox(self.centralwidget)
@@ -504,28 +509,6 @@ class Ui_MainWindow(object):
         self.gridLayout_5.setObjectName("gridLayout_5")
         self.tabWidget = QtWidgets.QTabWidget(self.dockWidgetContents_3)
         self.tabWidget.setObjectName("tabWidget")
-#        self.tab = QtWidgets.QWidget()
-#        self.tab.setObjectName("tab")
-#        self.gridLayout_3 = QtWidgets.QGridLayout(self.tab)
-#        self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
-#        self.gridLayout_3.setObjectName("gridLayout_3")
-#        self.tabLayout1 = QtWidgets.QGridLayout()
-#        self.tabLayout1.setObjectName("tabLayout1")
-#        self.tabLayout1Label = QtWidgets.QLabel(self.tab)
-#        self.tabLayout1Label.setAlignment(QtCore.Qt.AlignCenter)
-#        self.tabLayout1Label.setObjectName("tabLayout1Label")
-#        self.tabLayout1.addWidget(self.tabLayout1Label, 1, 0, 1, 1)
-#        self.gridLayout_3.addLayout(self.tabLayout1, 0, 0, 1, 1)
-#        self.tabWidget.addTab(self.tab, "")
-#        self.tab_2 = QtWidgets.QWidget()
-#        self.tab_2.setObjectName("tab_2")
-#        self.gridLayout_4 = QtWidgets.QGridLayout(self.tab_2)
-#        self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
-#        self.gridLayout_4.setObjectName("gridLayout_4")
-#        self.tabLayout2 = QtWidgets.QGridLayout()
-#        self.tabLayout2.setObjectName("tabLayout2")
-#        self.gridLayout_4.addLayout(self.tabLayout2, 0, 0, 1, 1)
-#        self.tabWidget.addTab(self.tab_2, "")
         self.gridLayout_5.addWidget(self.tabWidget, 0, 0, 1, 1)
         self.dockWidget_3.setWidget(self.dockWidgetContents_3)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(4), self.dockWidget_3)
@@ -688,7 +671,8 @@ class Ui_MainWindow(object):
                 self.tablLayout1TableWidget.setItem(i,j-1, item)
             i += 1
             self.tablLayout1TableWidget.setRowCount(i+1)
-    
+        self.tablLayout1TableWidget.setRowCount(i)
+        
     def connectDB(self):
         import sqlite3
         vt = sqlite3.connect('Functions\DB\DB.db') #r'C:\Users\merta\Desktop\Dersler\bitirme\LicenseProject\GUI\Functions\DB\DB.db'
@@ -709,14 +693,14 @@ class Ui_MainWindow(object):
         checkList[5]=self.checkBox_6.checkState()
         checkList[6]=self.checkBox_7.checkState()
         checkList[7]=self.checkBox_8.checkState()
-        print(self.checkBox.checkState())
-        print(self.checkBox_2.checkState())
-        print(self.checkBox_3.checkState())
-        print(self.checkBox_4.checkState())
-        print(self.checkBox_5.checkState())
-        print(self.checkBox_6.checkState())
-        print(self.checkBox_7.checkState())
-        print(self.checkBox_8.checkState())
+#        print(self.checkBox.checkState())
+#        print(self.checkBox_2.checkState())
+#        print(self.checkBox_3.checkState())
+#        print(self.checkBox_4.checkState())
+#        print(self.checkBox_5.checkState())
+#        print(self.checkBox_6.checkState())
+#        print(self.checkBox_7.checkState())
+#        print(self.checkBox_8.checkState())
         
         j=0
         y=2
@@ -727,7 +711,7 @@ class Ui_MainWindow(object):
             tmpList=np.zeros(72)
             for i in range(5):
                 if checkList[i]!=0:
-                    print(i,"aldi")
+#                    print(i,"aldi")
                     tmpList[j]=x[y]
                     tmpList[j+1]=x[y+1]
                     j=j+2
@@ -735,7 +719,7 @@ class Ui_MainWindow(object):
             i=5
             y=12
             if checkList[i]!=0:
-                print(i,"aldi")
+#                print(i,"aldi")
                 while y<38:
                     tmpList[j]=x[y]
                     j=j+1
@@ -744,7 +728,7 @@ class Ui_MainWindow(object):
                 y=38
             i=i+1
             if checkList[i]!=0:
-                print(i,"aldi")
+#                print(i,"aldi")
                 while y<62:
                     tmpList[j]=x[y]
                     j=j+1
@@ -753,16 +737,16 @@ class Ui_MainWindow(object):
                 y=62
             i=i+1
             if checkList[i]!=0:
-                print(i,"aldi")
+#                print(i,"aldi")
                 while y<74:
                     tmpList[j]=x[y]
                     j=j+1
                     y=y+1
             realList=tmpList[:j]
-            print('j-----',j)    
+#            print('j-----',j)    
             trainData.append(realList)
                 
-        self.statusbar.showMessage('Extracting features ...')  
+        self.statusbar.showMessage('Reading features ...')  
         
         tmpF=self.files[self.songListWidget.currentRow()].split('\\')
         fName=tmpF[-1:]
@@ -771,7 +755,7 @@ class Ui_MainWindow(object):
         
         index=0
         for x in veriler:
-            print(x[1])
+#            print(x[1])
             if x[1] == fName[0]:
                 testData= trainData[index]
                 
@@ -781,8 +765,8 @@ class Ui_MainWindow(object):
         result=knn.knn(trainData,testData,k,j)
         names=[]
         for i in result:
-            print(veriler[i][1],i)
-            names.append(veriler[i][1])        
+#            print(veriler[i][1],i)
+            names.append(veriler[i][1])
         conn.close()
         return result,veriler
 
@@ -798,46 +782,61 @@ class Ui_MainWindow(object):
         self.tabLayout1 = QtWidgets.QGridLayout()
         self.tabLayout1.setObjectName("tabLayout1")
         print('counter: ',self.verticalLayout_2.count())
-        for i in reversed(range(self.verticalLayout_2.count())): 
-            if self.verticalLayout_2.itemAt(i).widget() is not None:
-                self.verticalLayout_2.itemAt(i).widget().setParent(None)
-        # Recomm. Label Text Rewrite
-        self.label_3 = QtWidgets.QLabel(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
-        self.label_3.setSizePolicy(sizePolicy)
-        self.label_3.setMaximumSize(QtCore.QSize(16777215, 25))
-        palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-        self.label_3.setPalette(palette)
-        font = QtGui.QFont()
-        font.setFamily("Gill Sans Ultra Bold")
-        self.label_3.setFont(font)
-        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_3.setObjectName("label_3")
-        self.label_3.setText('Recommendations')
-        self.verticalLayout_2.addWidget(self.label_3)
+#        # Delete before recom.
+#        for i in reversed(range(self.verticalLayout_2.count())): 
+#            if self.verticalLayout_2.itemAt(i).widget() is not None:
+#                self.verticalLayout_2.itemAt(i).widget().setParent(None)
+#        # Recomm. Label Text Rewrite
+#        self.label_3 = QtWidgets.QLabel(self.centralwidget)
+#        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+#        sizePolicy.setHorizontalStretch(0)
+#        sizePolicy.setVerticalStretch(0)
+#        sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
+#        self.label_3.setSizePolicy(sizePolicy)
+#        self.label_3.setMaximumSize(QtCore.QSize(16777215, 25))
+#        palette = QtGui.QPalette()
+#        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
+#        brush.setStyle(QtCore.Qt.SolidPattern)
+#        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
+#        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
+#        brush.setStyle(QtCore.Qt.SolidPattern)
+#        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
+#        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+#        brush.setStyle(QtCore.Qt.SolidPattern)
+#        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
+#        self.label_3.setPalette(palette)
+#        font = QtGui.QFont()
+#        font.setFamily("Gill Sans Ultra Bold")
+#        self.label_3.setFont(font)
+#        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+#        self.label_3.setObjectName("label_3")
+#        self.label_3.setText('Recommendations')
+#        self.verticalLayout_2.addWidget(self.label_3)
+        self.predictsTableWidget.setRowCount(0)
+        self.predictsTableWidget.setColumnCount(1)
+        headers = ['Song']
+        self.predictsTableWidget.setHorizontalHeaderLabels(headers)
+        self.predictsTableWidget.horizontalHeader().setStretchLastSection(True)
         i=0
         for x in result[0]:
-            self.label_3 = QtWidgets.QLabel(self.centralwidget)
-            self.label_3.setAlignment(QtCore.Qt.AlignCenter)
-            self.label_3.setMaximumSize(QtCore.QSize(16777215, 25))
-            self.verticalLayout_2.addWidget(self.label_3)
-            
-            self.label_3.setText(str(i+1)+"-) " +result[1][x][1])
             i += 1
+            self.predictsTableWidget.setRowCount(i)
+            item = QTableWidgetItem(str(result[1][x][1]))
+            item.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.predictsTableWidget.setItem(i-1,0, item)
+
+#        i=0
+#        for x in result[0]:
+#            self.label_3 = QtWidgets.QLabel(self.centralwidget)
+#            self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+#            self.label_3.setMaximumSize(QtCore.QSize(16777215, 25))
+#            self.verticalLayout_2.addWidget(self.label_3)
+#            
+#            self.label_3.setText(str(i+1)+"-) " +result[1][x][1])
+#            i += 1
 
         self.gridLayout.addLayout(self.tabLayout1, 0, 0, 1, 1)
+        self.statusbar.showMessage('Graphics on drawing...')
         sc = MyStaticMplCanvas(self.centralwidget, width=2, height=1, dpi=100, index=self.files[self.songListWidget.currentRow()])
         self.tabLayout1.addWidget(sc)
         self.tabWidget.setCurrentWidget(self.tab)
@@ -858,7 +857,7 @@ class MyMplCanvas(FigureCanvas):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         self.compute_initial_figure(index)
-
+        
         FigureCanvas.__init__(self, fig)
         self.setParent(parent)
 
@@ -874,7 +873,8 @@ class MyStaticMplCanvas(MyMplCanvas):
     """Simple canvas with a sine plot."""
 
     def compute_initial_figure(self, index):
-        y, sr = librosa.load(index)
+        
+        y, sr = librosa.load(index, duration=10)
         max_points=5e4
         x_axis='time'
         offset=0.0

@@ -1,5 +1,11 @@
 <RCC>
   <qresource prefix="icons">
+    <file>Pause-icon64.png</file>
+    <file>Pause-icon64disabled.png</file>
+    <file>Play-icon64.png</file>
+    <file>Play-icon64disable.png</file>
+    <file>Stop-icon64.png</file>
+    <file>Stop-icon64disabled.png</file>
     <file>Music-Library-icon.png</file>
     <file>add-icon.png</file>
     <file>Save-icon.png</file>
