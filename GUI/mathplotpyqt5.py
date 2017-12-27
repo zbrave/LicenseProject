@@ -124,13 +124,113 @@ class MyDynamicMplCanvas(MyMplCanvas):
         timer.start(1000)
 
     def compute_initial_figure(self):
-        self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4], 'r')
+        y, sr = librosa.load(librosa.util.example_audio_file(), duration=10)
+        max_points=5e4
+        x_axis='time'
+        offset=0.0
+        max_sr=1000
+        util.valid_audio(y, mono=False)
+
+        if not (isinstance(max_sr, int) and max_sr > 0):
+            raise ParameterError('max_sr must be a non-negative integer')
+    
+        target_sr = sr
+        hop_length = 1
+    
+        if max_points is not None:
+            if max_points <= 0:
+                raise ParameterError('max_points must be strictly positive')
+    
+            if max_points < y.shape[-1]:
+                target_sr = min(max_sr, (sr * y.shape[-1]) // max_points)
+    
+            hop_length = sr // target_sr
+    
+            if y.ndim == 1:
+                y = util.frame(y, hop_length).max(axis=0)
+            else:
+                y = np.vstack([util.frame(_, hop_length).max(axis=0) for _ in y])
+    
+        if y.ndim > 1:
+            y_top = y[0]
+            y_bottom = -y[1]
+        else:
+            y_top = y
+            y_bottom = -y
+    
+        axes = plt.gca()
+    
+#        kwargs.setdefault('color', next(axes._get_lines.prop_cycler)['color'])
+    
+        locs = offset + core.frames_to_time(np.arange(len(y_top)),
+                                            sr=sr,
+                                            hop_length=hop_length)
+        self.axes.fill_between(locs, y_bottom, y_top)
+    
+        axes.set_xlim([locs.min(), locs.max()])
+        if x_axis == 'time':
+            axes.xaxis.set_major_formatter(display.TimeFormatter(lag=False))
+            axes.xaxis.set_label_text('Time')
+        elif x_axis is None or x_axis in ['off', 'none']:
+            axes.set_xticks([])
+        else:
+            raise ParameterError('Unknown x_axis value: {}'.format(x_axis))
 
     def update_figure(self):
         # Build a list of 4 random integers between 0 and 10 (both inclusive)
-        l = [random.randint(0, 10) for i in range(4)]
-        self.axes.cla()
-        self.axes.plot([0, 1, 2, 3], l, 'r')
+        y, sr = librosa.load(librosa.util.example_audio_file(), duration=10)
+        max_points=5e4
+        x_axis='time'
+        offset=0.0
+        max_sr=1000
+        util.valid_audio(y, mono=False)
+
+        if not (isinstance(max_sr, int) and max_sr > 0):
+            raise ParameterError('max_sr must be a non-negative integer')
+    
+        target_sr = sr
+        hop_length = 1
+    
+        if max_points is not None:
+            if max_points <= 0:
+                raise ParameterError('max_points must be strictly positive')
+    
+            if max_points < y.shape[-1]:
+                target_sr = min(max_sr, (sr * y.shape[-1]) // max_points)
+    
+            hop_length = sr // target_sr
+    
+            if y.ndim == 1:
+                y = util.frame(y, hop_length).max(axis=0)
+            else:
+                y = np.vstack([util.frame(_, hop_length).max(axis=0) for _ in y])
+    
+        if y.ndim > 1:
+            y_top = y[0]
+            y_bottom = -y[1]
+        else:
+            y_top = y
+            y_bottom = -y
+    
+        axes = plt.gca()
+    
+#        kwargs.setdefault('color', next(axes._get_lines.prop_cycler)['color'])
+    
+        locs = offset + core.frames_to_time(np.arange(len(y_top)),
+                                            sr=sr,
+                                            hop_length=hop_length)
+        self.axes.fill_between(locs, y_bottom, y_top, where=50 >= y_bottom, facecolor='green', interpolate=True)
+        self.axes.fill_between(locs, y_bottom, y_top, where=50 <= y_bottom, facecolor='red', interpolate=True)
+    
+        axes.set_xlim([locs.min(), locs.max()])
+        if x_axis == 'time':
+            axes.xaxis.set_major_formatter(display.TimeFormatter(lag=False))
+            axes.xaxis.set_label_text('Time')
+        elif x_axis is None or x_axis in ['off', 'none']:
+            axes.set_xticks([])
+        else:
+            raise ParameterError('Unknown x_axis value: {}'.format(x_axis))
+        
         self.draw()
 
 

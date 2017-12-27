@@ -16,6 +16,7 @@ from matplotlib.collections import PolyCollection
 import librosa
 import matplotlib
 import Functions.knn as knn
+import Functions.kmeans as kmeans
 import Functions.getFeatures as Features
 import Functions.dbImport as dbImport
 import numpy as np
@@ -378,6 +379,39 @@ class Ui_MainWindow(object):
         self.gridLayout_2 = QtWidgets.QGridLayout(self.dockWidgetContents_2)
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_2.setObjectName("gridLayout_2")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.horizontalSlider = QtWidgets.QSlider(self.dockWidgetContents_2)
+        self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
+        self.horizontalSlider.setTickPosition(QtWidgets.QSlider.NoTicks)
+        self.horizontalSlider.setObjectName("horizontalSlider")
+        self.horizontalLayout_2.addWidget(self.horizontalSlider)
+        self.label_4 = QtWidgets.QLabel(self.dockWidgetContents_2)
+        self.label_4.setObjectName("label_4")
+        self.horizontalLayout_2.addWidget(self.label_4)
+        self.gridLayout_2.addLayout(self.horizontalLayout_2, 1, 0, 1, 1)
+        self.gridLayout_9 = QtWidgets.QGridLayout()
+        self.gridLayout_9.setObjectName("gridLayout_9")
+        self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
+        self.radioButton = QtWidgets.QRadioButton(self.dockWidgetContents_2)
+        self.radioButton.setChecked(True)
+        self.radioButton.setObjectName("radioButton")
+        self.horizontalLayout_6.addWidget(self.radioButton)
+        self.pushButton_2 = QtWidgets.QPushButton(self.dockWidgetContents_2)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.horizontalLayout_6.addWidget(self.pushButton_2)
+        self.gridLayout_9.addLayout(self.horizontalLayout_6, 3, 0, 1, 1)
+        self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
+        self.label_8 = QtWidgets.QLabel(self.dockWidgetContents_2)
+        self.label_8.setObjectName("label_8")
+        self.horizontalLayout_7.addWidget(self.label_8)
+        self.lineEdit_5 = QtWidgets.QLineEdit(self.dockWidgetContents_2)
+        self.lineEdit_5.setObjectName("lineEdit_5")
+        self.horizontalLayout_7.addWidget(self.lineEdit_5)
+        self.gridLayout_9.addLayout(self.horizontalLayout_7, 1, 0, 1, 1)
+        self.gridLayout_2.addLayout(self.gridLayout_9, 4, 0, 1, 1)
         self.verticalLayout_4 = QtWidgets.QVBoxLayout()
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.label_2 = QtWidgets.QLabel(self.dockWidgetContents_2)
@@ -476,28 +510,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.stopSongButton)
         self.verticalLayout_4.addLayout(self.horizontalLayout)
         self.gridLayout_2.addLayout(self.verticalLayout_4, 0, 0, 1, 1)
-        self.gridLayout_9 = QtWidgets.QGridLayout()
-        self.gridLayout_9.setObjectName("gridLayout_9")
-        self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-        self.radioButton = QtWidgets.QRadioButton(self.dockWidgetContents_2)
-        self.radioButton.setChecked(True)
-        self.radioButton.setObjectName("radioButton")
-        self.horizontalLayout_6.addWidget(self.radioButton)
-        self.radioButton_2 = QtWidgets.QRadioButton(self.dockWidgetContents_2)
-        self.radioButton_2.setObjectName("radioButton_2")
-        self.horizontalLayout_6.addWidget(self.radioButton_2)
-        self.gridLayout_9.addLayout(self.horizontalLayout_6, 3, 0, 1, 1)
-        self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
-        self.label_8 = QtWidgets.QLabel(self.dockWidgetContents_2)
-        self.label_8.setObjectName("label_8")
-        self.horizontalLayout_7.addWidget(self.label_8)
-        self.lineEdit_5 = QtWidgets.QLineEdit(self.dockWidgetContents_2)
-        self.lineEdit_5.setObjectName("lineEdit_5")
-        self.horizontalLayout_7.addWidget(self.lineEdit_5)
-        self.gridLayout_9.addLayout(self.horizontalLayout_7, 1, 0, 1, 1)
-        self.gridLayout_2.addLayout(self.gridLayout_9, 2, 0, 1, 1)
         self.dockWidget_2.setWidget(self.dockWidgetContents_2)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_2)
         self.dockWidget_3 = QtWidgets.QDockWidget(MainWindow)
@@ -531,6 +543,8 @@ class Ui_MainWindow(object):
         self.stopSongButton.clicked.connect(self.stopSong)
         self.pauseSongButton.clicked.connect(self.pauseSong)
         self.playSongButton.clicked.connect(self.playSong)
+        self.horizontalSlider.sliderMoved.connect(self.setPosition)
+        self.pushButton_2.clicked.connect(self.kmeansTable)
 #        self.loadButton.clicked.connect(self.openFileNamesDialog)
         self.actionNew_Data_Import.triggered.connect(self.newDataImp)
         self.retranslateUi(MainWindow)
@@ -544,6 +558,50 @@ class Ui_MainWindow(object):
         self.initFeaturesTable()
         print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
 
+    def updateSlider(self):
+        b = self.horizontalSlider.sliderPosition()+1
+        self.horizontalSlider.setSliderPosition(b)
+        a = player.get_media().get_duration()-(player.get_media().get_duration()-b*1000)
+        self.label_4.setText(str(int(a/1000/60)).zfill(2)+':'+str(int(a/1000%60)).zfill(2))
+        
+    def playSong(self):
+        if (player.is_playing()):
+            self.stopSong()
+            
+        if self.songListWidget.currentItem():
+            media = instance.media_new(self.files[self.songListWidget.currentRow()])
+            player.set_media(media)
+            player.play()
+            self.playSongButton.setEnabled(False)
+            while(not player.is_playing()):
+                i=1
+            self.horizontalSlider.setSliderPosition(0)
+            self.horizontalSlider.setMaximum(int(player.get_media().get_duration()/1000))
+            print('active threads: ',self.threadpool.activeThreadCount())
+            print('player is play ? :',player.is_playing())
+            self.threadop()
+            if self.threadpool.activeThreadCount() == 1 :
+                self.threadop2()
+                
+    def pauseSong(self):
+        if self.songListWidget.currentItem():
+            player.pause()
+            
+    def stopSong(self):
+        self.horizontalSlider.setSliderPosition(0)
+        if self.songListWidget.currentItem():
+            player.stop()
+            
+    def setPosition(self, position):
+        """Set the position
+        """
+        # setting the position to where the slider was dragged
+        player.set_position(position / int(player.get_media().get_duration()/1000))
+        # the vlc MediaPlayer needs a float value between 0 and 1, Qt
+        # uses integer variables, so you need a factor; the higher the
+        # factor, the more precise are the results
+        # (1000 should be enough)
+        
     def progress_fn(self):
         self.statusbar.showMessage('Database operations going on ...')
 
@@ -553,6 +611,7 @@ class Ui_MainWindow(object):
         return result, veriler
 
     def thread_complete(self):
+        print('song bitti.')
         self.statusbar.showMessage('Database operations completed.')
         
     def threadop(self):
@@ -561,6 +620,26 @@ class Ui_MainWindow(object):
         worker.signals.result.connect(self.showFeatureOnNewTab)
         worker.signals.finished.connect(self.thread_complete)
         worker.signals.progress.connect(self.progress_fn)
+
+        # Execute
+        self.threadpool.start(worker)
+        
+    def execute_this_fn2(self, progress_callback):
+        while(not player.is_playing()):
+            i=1
+        
+        print('timer:',int(player.get_media().get_duration()/1000))
+#        for i in range(int(player.get_media().get_duration()/1000)):
+        while(player.is_playing()):
+            time.sleep(1)
+            progress_callback.emit()
+    
+    def threadop2(self):
+        # Pass the function to execute
+        worker = Worker(self.execute_this_fn2) # Any other args, kwargs are passed to the run function
+#        worker.signals.result.connect(self.showFeatureOnNewTab)
+        worker.signals.finished.connect(self.thread_complete)
+        worker.signals.progress.connect(self.updateSlider)
 
         # Execute
         self.threadpool.start(worker)
@@ -580,10 +659,11 @@ class Ui_MainWindow(object):
         self.fileOpMenu.setTitle(_translate("MainWindow", "File operations"))
         self.label.setText(_translate("MainWindow", "Features"))
         self.tablLayout1TableWidget.setSortingEnabled(False)
+        self.label_4.setText(_translate("MainWindow", "00:00"))
         self.label_2.setText(_translate("MainWindow", "Playlist"))
         self.songListWidget.setWhatsThis(_translate("MainWindow", "<html><head/><body><p><br/></p></body></html>"))
         self.radioButton.setText(_translate("MainWindow", "kNN"))
-        self.radioButton_2.setText(_translate("MainWindow", "Kmeans"))
+        self.pushButton_2.setText(_translate("MainWindow", "Kmeans"))
         self.label_8.setText(_translate("MainWindow", "k value:"))
         self.lineEdit_5.setText(_translate("MainWindow", "3"))
 #        self.tabLayout1Label.setText(_translate("MainWindow", "TextLabel"))
@@ -625,14 +705,6 @@ class Ui_MainWindow(object):
                 x = fileNames[i].split('/')
                 self.songListWidget.addItems(x[-1:])
             print(self.files)
-            
-    def playSong(self):
-        if self.songListWidget.currentItem():
-            media = instance.media_new(self.files[self.songListWidget.currentRow()])
-            player.set_media(media)
-            player.play()
-            if self.threadpool.activeThreadCount() == 0:
-                self.threadop()
                 
     def addnewTab(self):
             # Adds new tab
@@ -770,8 +842,54 @@ class Ui_MainWindow(object):
         conn.close()
         return result,veriler
 
+    def kmeansTable(self):
+        import sqlite3
+
+        vt = sqlite3.connect('Functions/DB/DB.db')
+        print ('Opened database successfully')
+        conn=vt.cursor()
         
+        conn.execute("SELECT * FROM Feature")
+        
+        veriler = conn.fetchall()
+        t=veriler.__len__()
+        trainData=np.random.rand(t,72)
+        
+        for i in range(t):
+           trainData[i]=veriler[i][2:]
+            
+        label=np.full([t,],-1)
+        k=self.lineEdit_5.text()
+        k=int(k)
+        
+        Ltemp=kmeans.kMeans(k=k,method='kmeans',Data=trainData,size=t,L=label)
+        print(Ltemp)
+        conn.close()
+        
+        headers = []
+        for i in range(k):
+            headers.append(str(i))
+            
+        self.predictsTableWidget.setRowCount(0)    
+        self.predictsTableWidget.setRowCount(t)
+        print(t)
+        self.predictsTableWidget.setColumnCount(k)
+        self.predictsTableWidget.setHorizontalHeaderLabels(headers)
+        self.predictsTableWidget.horizontalHeader().setStretchLastSection(True)
+        rowindex=np.full([k,],0)
+        i=0
+        for x in veriler:
+            i += 1
+            rowindex[Ltemp[i-1]] += 1
+            print(x[1],Ltemp[i-1])
+            #self.predictsTableWidget.setRowCount(rowindex[Ltemp[i-1]])
+            item = QTableWidgetItem(str(x[1]))
+            item.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.predictsTableWidget.setItem(rowindex[Ltemp[i-1]]-1,Ltemp[i-1], item)
+        self.predictsTableWidget.setRowCount(max(rowindex))
+ 
     def showFeatureOnNewTab(self, result):
+        self.playSongButton.setEnabled(True)
        # Adds new tab
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
@@ -782,36 +900,6 @@ class Ui_MainWindow(object):
         self.tabLayout1 = QtWidgets.QGridLayout()
         self.tabLayout1.setObjectName("tabLayout1")
         print('counter: ',self.verticalLayout_2.count())
-#        # Delete before recom.
-#        for i in reversed(range(self.verticalLayout_2.count())): 
-#            if self.verticalLayout_2.itemAt(i).widget() is not None:
-#                self.verticalLayout_2.itemAt(i).widget().setParent(None)
-#        # Recomm. Label Text Rewrite
-#        self.label_3 = QtWidgets.QLabel(self.centralwidget)
-#        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-#        sizePolicy.setHorizontalStretch(0)
-#        sizePolicy.setVerticalStretch(0)
-#        sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
-#        self.label_3.setSizePolicy(sizePolicy)
-#        self.label_3.setMaximumSize(QtCore.QSize(16777215, 25))
-#        palette = QtGui.QPalette()
-#        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
-#        brush.setStyle(QtCore.Qt.SolidPattern)
-#        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-#        brush = QtGui.QBrush(QtGui.QColor(170, 0, 0))
-#        brush.setStyle(QtCore.Qt.SolidPattern)
-#        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-#        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
-#        brush.setStyle(QtCore.Qt.SolidPattern)
-#        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-#        self.label_3.setPalette(palette)
-#        font = QtGui.QFont()
-#        font.setFamily("Gill Sans Ultra Bold")
-#        self.label_3.setFont(font)
-#        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
-#        self.label_3.setObjectName("label_3")
-#        self.label_3.setText('Recommendations')
-#        self.verticalLayout_2.addWidget(self.label_3)
         self.predictsTableWidget.setRowCount(0)
         self.predictsTableWidget.setColumnCount(1)
         headers = ['Song']
@@ -840,15 +928,6 @@ class Ui_MainWindow(object):
         sc = MyStaticMplCanvas(self.centralwidget, width=2, height=1, dpi=100, index=self.files[self.songListWidget.currentRow()])
         self.tabLayout1.addWidget(sc)
         self.tabWidget.setCurrentWidget(self.tab)
-
-        
-    def pauseSong(self):
-        if self.songListWidget.currentItem():
-            player.pause()
-            
-    def stopSong(self):
-        if self.songListWidget.currentItem():
-            player.stop()
             
 class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
