@@ -954,6 +954,12 @@ background-repeat: none;
            <property name="text">
             <string/>
            </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
            <property name="checkable">
             <bool>false</bool>
            </property>

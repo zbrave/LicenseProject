@@ -471,6 +471,7 @@ class Ui_MainWindow(object):
 "background-repeat: none;\n"
 "")
         self.playSongButton.setText("")
+        self.playSongButton.setIconSize(QtCore.QSize(24, 24))
         self.playSongButton.setCheckable(False)
         self.playSongButton.setObjectName("playSongButton")
         self.horizontalLayout.addWidget(self.playSongButton)
@@ -731,7 +732,7 @@ class Ui_MainWindow(object):
         self.statusbar.showMessage('Opened database successfully')
         conn=vt.cursor()
         self.statusbar.showMessage('Database features was loaded.')
-        conn.execute("SELECT * FROM Feature")
+        conn.execute("SELECT * FROM Feature ORDER BY NAME")
         
         veriler = conn.fetchall()
         conn.close()
@@ -926,7 +927,9 @@ class Ui_MainWindow(object):
         self.gridLayout.addLayout(self.tabLayout1, 0, 0, 1, 1)
         self.statusbar.showMessage('Graphics on drawing...')
         sc = MyStaticMplCanvas(self.centralwidget, width=2, height=1, dpi=100, index=self.files[self.songListWidget.currentRow()])
+        sc2 = MyStaticMplCanvas2(self.centralwidget, width=2, height=1, dpi=100, index=self.files[self.songListWidget.currentRow()])
         self.tabLayout1.addWidget(sc)
+        self.tabLayout1.addWidget(sc2)
         self.tabWidget.setCurrentWidget(self.tab)
             
 class MyMplCanvas(FigureCanvas):
@@ -954,6 +957,14 @@ class MyStaticMplCanvas(MyMplCanvas):
     def compute_initial_figure(self, index):
         
         y, sr = librosa.load(index, duration=10)
+        spectral_centroids = librosa.feature.spectral_centroid(y+0.01, sr=sr)[0]
+        spectral_bandwidth = librosa.feature.spectral_bandwidth(y+0.01, sr=sr)[0]
+        spectral_contrast = librosa.feature.spectral_contrast(y+0.01, sr=sr)
+        spectral_rolloff = librosa.feature.spectral_rolloff(y+0.01, sr=sr)[0]
+        def normalize(x, axis=0):
+            import sklearn
+            return sklearn.preprocessing.minmax_scale(x, axis=axis)
+        
         max_points=5e4
         x_axis='time'
         offset=0.0
@@ -994,8 +1005,12 @@ class MyStaticMplCanvas(MyMplCanvas):
         locs = offset + core.frames_to_time(np.arange(len(y_top)),
                                             sr=sr,
                                             hop_length=hop_length)
-        self.axes.fill_between(locs, y_bottom, y_top)
-    
+        self.axes.fill_between(locs, y_bottom, y_top, alpha=0.5)
+#        self.axes.imshow(normalize(spectral_contrast, axis=1), aspect='auto', origin='lower', cmap='coolwarm')
+        self.axes.plot(locs, normalize(spectral_centroids), color='r') # normalize for visualization purposes
+        self.axes.plot(locs, normalize(spectral_bandwidth), color='g')
+        self.axes.plot(locs, normalize(spectral_rolloff), color='b')
+        self.axes.legend(('Spectral Centroid', 'Spectral Bandwith' , 'Spectral Rollof', 'Waveplot'))
         axes.set_xlim([locs.min(), locs.max()])
         if x_axis == 'time':
             axes.xaxis.set_major_formatter(display.TimeFormatter(lag=False))
@@ -1005,6 +1020,75 @@ class MyStaticMplCanvas(MyMplCanvas):
         else:
             raise ParameterError('Unknown x_axis value: {}'.format(x_axis))
 
+class MyStaticMplCanvas2(MyMplCanvas):
+    """Simple canvas with a sine plot."""
+
+    def compute_initial_figure(self, index):
+        
+        y, sr = librosa.load(index, duration=10)
+#        spectral_centroids = librosa.feature.spectral_centroid(y+0.01, sr=sr)[0]
+#        spectral_bandwidth = librosa.feature.spectral_bandwidth(y+0.01, sr=sr)[0]
+        spectral_contrast = librosa.feature.spectral_contrast(y+0.01, sr=sr)
+#        spectral_rolloff = librosa.feature.spectral_rolloff(y+0.01, sr=sr)[0]
+        def normalize(x, axis=0):
+            import sklearn
+            return sklearn.preprocessing.minmax_scale(x, axis=axis)
+        
+        max_points=5e4
+        x_axis='time'
+        offset=0.0
+        max_sr=1000
+        util.valid_audio(y, mono=False)
+
+        if not (isinstance(max_sr, int) and max_sr > 0):
+            raise ParameterError('max_sr must be a non-negative integer')
+    
+        target_sr = sr
+        hop_length = 1
+    
+        if max_points is not None:
+            if max_points <= 0:
+                raise ParameterError('max_points must be strictly positive')
+    
+            if max_points < y.shape[-1]:
+                target_sr = min(max_sr, (sr * y.shape[-1]) // max_points)
+    
+            hop_length = sr // target_sr
+    
+            if y.ndim == 1:
+                y = util.frame(y, hop_length).max(axis=0)
+            else:
+                y = np.vstack([util.frame(_, hop_length).max(axis=0) for _ in y])
+    
+        if y.ndim > 1:
+            y_top = y[0]
+            y_bottom = -y[1]
+        else:
+            y_top = y
+            y_bottom = -y
+    
+        axes = plt.gca()
+    
+#        kwargs.setdefault('color', next(axes._get_lines.prop_cycler)['color'])
+    
+        locs = offset + core.frames_to_time(np.arange(len(y_top)),
+                                            sr=sr,
+                                            hop_length=hop_length)
+#        self.axes.fill_between(locs, y_bottom, y_top, alpha=0.5)
+        self.axes.set_title('Spectral Contrast')
+        self.axes.imshow(normalize(spectral_contrast, axis=1), aspect='auto', origin='lower', cmap='coolwarm')
+#        self.axes.plot(locs, normalize(spectral_centroids), color='r') # normalize for visualization purposes
+#        self.axes.plot(locs, normalize(spectral_bandwidth), color='g')
+#        self.axes.plot(locs, normalize(spectral_rolloff), color='b')
+#        self.axes.legend(('Spectral Centroid', 'Spectral Bandwith' , 'Spectral Rollof', 'Waveplot'))
+        axes.set_xlim([locs.min(), locs.max()])
+        if x_axis == 'time':
+            axes.xaxis.set_major_formatter(display.TimeFormatter(lag=False))
+            axes.xaxis.set_label_text('Time')
+        elif x_axis is None or x_axis in ['off', 'none']:
+            axes.set_xticks([])
+        else:
+            raise ParameterError('Unknown x_axis value: {}'.format(x_axis))
 
 import Icons.icons            
 #VLC Player conf.          

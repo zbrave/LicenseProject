@@ -372,6 +372,7 @@ class Ui_MainWindow(object):
 "background-repeat: none;\n"
 "")
         self.playSongButton.setText("")
+        self.playSongButton.setIconSize(QtCore.QSize(24, 24))
         self.playSongButton.setCheckable(False)
         self.playSongButton.setObjectName("playSongButton")
         self.horizontalLayout.addWidget(self.playSongButton)
