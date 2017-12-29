@@ -566,9 +566,10 @@ class Ui_MainWindow(object):
         self.label_4.setText(str(int(a/1000/60)).zfill(2)+':'+str(int(a/1000%60)).zfill(2))
         
     def playSong(self):
+        time.sleep(0.5)
         if (player.is_playing()):
             self.stopSong()
-            
+        
         if self.songListWidget.currentItem():
             media = instance.media_new(self.files[self.songListWidget.currentRow()])
             player.set_media(media)
@@ -585,11 +586,14 @@ class Ui_MainWindow(object):
                 self.threadop2()
                 
     def pauseSong(self):
+        if not player.is_playing() and self.threadpool.activeThreadCount() == 0:
+            self.threadop2()
         if self.songListWidget.currentItem():
             player.pause()
             
     def stopSong(self):
         self.horizontalSlider.setSliderPosition(0)
+        self.label_4.setText('00:00')
         if self.songListWidget.currentItem():
             player.stop()
             
@@ -629,11 +633,12 @@ class Ui_MainWindow(object):
         while(not player.is_playing()):
             i=1
         
-        print('timer:',int(player.get_media().get_duration()/1000))
+#        print('timer:',int(player.get_media().get_duration()/1000))
 #        for i in range(int(player.get_media().get_duration()/1000)):
         while(player.is_playing()):
             time.sleep(1)
-            progress_callback.emit()
+            if player.is_playing():
+                progress_callback.emit()
     
     def threadop2(self):
         # Pass the function to execute
