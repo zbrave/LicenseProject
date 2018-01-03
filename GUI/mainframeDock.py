@@ -110,7 +110,7 @@ class Ui_MainWindow(object):
     files = []
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(864, 900)
+        MainWindow.resize(1411, 976)
         MainWindow.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -190,7 +190,7 @@ class Ui_MainWindow(object):
         self.gridLayout_6.addLayout(self.verticalLayout_2, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 864, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1411, 21))
         self.menubar.setObjectName("menubar")
         self.fileOpMenu = QtWidgets.QMenu(self.menubar)
         self.fileOpMenu.setObjectName("fileOpMenu")
@@ -538,7 +538,8 @@ class Ui_MainWindow(object):
         self.fileOpMenu.addAction(self.actionNew_Data_Import)
         self.fileOpMenu.addAction(self.actionPrepared_Data_Import_csv)
         self.menubar.addAction(self.fileOpMenu.menuAction())
-
+        
+        self.lineEdit_5.setValidator(QtGui.QIntValidator(1, 20))
         self.songListWidget.setCurrentRow(-1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.stopSongButton.clicked.connect(self.stopSong)
@@ -597,7 +598,7 @@ class Ui_MainWindow(object):
     def playSong(self):
         if (player.is_playing()):
             self.stopSong()
-            
+                
         if self.songListWidget.currentItem():
             media = instance.media_new(self.files[self.songListWidget.currentRow()])
             player.set_media(media)
@@ -947,7 +948,7 @@ class Ui_MainWindow(object):
             item = QTableWidgetItem(str(result[1][x][1]))
             item.setFlags(QtCore.Qt.ItemIsEnabled)
             self.predictsTableWidget.setItem(i-1,0, item)
-
+            
 #        i=0
 #        for x in result[0]:
 #            self.label_3 = QtWidgets.QLabel(self.centralwidget)
@@ -965,7 +966,18 @@ class Ui_MainWindow(object):
         self.tabLayout1.addWidget(sc)
         self.tabLayout1.addWidget(sc2)
         self.tabWidget.setCurrentWidget(self.tab)
-            
+        
+        # paint data table for recom. items
+        row = self.tablLayout1TableWidget.rowCount()
+        for i in range(row):
+            self.tablLayout1TableWidget.item(i,0).setBackground(QColor(255,255,255))
+        row = self.predictsTableWidget.rowCount()
+        for i in range(row):
+            item = self.predictsTableWidget.item(i,0)
+            print("item: ",item.text())
+            item = self.tablLayout1TableWidget.findItems(item.text(), QtCore.Qt.MatchExactly)[0]
+            item.setBackground(QColor(255,15,78))
+                        
 class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
 
