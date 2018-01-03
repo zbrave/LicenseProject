@@ -564,17 +564,45 @@ class Ui_MainWindow(object):
         self.horizontalSlider.setSliderPosition(b)
         a = player.get_media().get_duration()-(player.get_media().get_duration()-b*1000)
         self.label_4.setText(str(int(a/1000/60)).zfill(2)+':'+str(int(a/1000%60)).zfill(2))
-        
-    def playSong(self):
-        time.sleep(0.5)
+     
+    def playOnRecomm(self):
         if (player.is_playing()):
             self.stopSong()
+            
+        print("index: ",self.predictsTableWidget.currentRow())
+        print("asd ",self.predictsTableWidget.item(self.predictsTableWidget.currentRow(),0).text())
+        song = self.songListWidget.findItems(self.predictsTableWidget.item(self.predictsTableWidget.currentRow(),0).text(), QtCore.Qt.MatchExactly)
         
+        if len(song) > 0:
+
+            for item in song:
+                print("row number of found item =",self.songListWidget.row(item))
+                print("text of found item =",item.text())
+            
+        if self.songListWidget.currentItem():
+            media = instance.media_new(self.files[self.songListWidget.row(song[0])])
+            player.set_media(media)
+            player.play()
+            while(not player.is_playing()):
+                i=1
+                
+            self.horizontalSlider.setSliderPosition(0)
+            self.horizontalSlider.setMaximum(int(player.get_media().get_duration()/1000))
+            print('active threads: ',self.threadpool.activeThreadCount())
+            print('player is play ? :',player.is_playing())
+#            self.threadop()
+            if self.threadpool.activeThreadCount() == 0 :
+                self.threadop2()
+                
+    def playSong(self):
+        if (player.is_playing()):
+            self.stopSong()
+            
         if self.songListWidget.currentItem():
             media = instance.media_new(self.files[self.songListWidget.currentRow()])
             player.set_media(media)
             player.play()
-            self.playSongButton.setEnabled(False)
+#            self.playSongButton.setEnabled(False)
             while(not player.is_playing()):
                 i=1
             self.horizontalSlider.setSliderPosition(0)
@@ -893,7 +921,7 @@ class Ui_MainWindow(object):
             item.setFlags(QtCore.Qt.ItemIsEnabled)
             self.predictsTableWidget.setItem(rowindex[Ltemp[i-1]]-1,Ltemp[i-1], item)
         self.predictsTableWidget.setRowCount(max(rowindex))
- 
+            
     def showFeatureOnNewTab(self, result):
         self.playSongButton.setEnabled(True)
        # Adds new tab
@@ -909,6 +937,7 @@ class Ui_MainWindow(object):
         self.predictsTableWidget.setRowCount(0)
         self.predictsTableWidget.setColumnCount(1)
         headers = ['Song']
+        self.predictsTableWidget.cellDoubleClicked.connect(self.playOnRecomm)
         self.predictsTableWidget.setHorizontalHeaderLabels(headers)
         self.predictsTableWidget.horizontalHeader().setStretchLastSection(True)
         i=0
