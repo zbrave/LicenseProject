@@ -756,7 +756,7 @@ class Ui_MainWindow(object):
                          'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
                          'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
                          'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)']
-        planet_diameter = 5000*np.ones((len(ver)))
+        planet_diameter = 10000*np.ones((len(ver)))
         
         # Create trace, sizing bubbles by planet diameter
         trace1 = Scatter3d(
@@ -781,7 +781,7 @@ class Ui_MainWindow(object):
                                                titlefont=dict(color='rgb(220, 220, 220)')),
                                     zaxis=dict(title='Z',
                                                titlefont=dict(color='rgb(220, 220, 220)')),
-                                    bgcolor = 'rgb(20, 24, 54)'
+                                    bgcolor = 'rgb(255, 255, 255)'
                                    )
                      )
         
