@@ -553,6 +553,7 @@ class Ui_MainWindow(object):
         self.pauseSongButton.clicked.connect(self.pauseSong)
         self.playSongButton.clicked.connect(self.playSong)
         self.actionPrepared_Data_Import_csv.triggered.connect(self.importCsv)
+        self.actionPrepared_Data_Export_csv.triggered.connect(self.exportCsv)
         self.horizontalSlider.sliderMoved.connect(self.setPosition)
         self.pushButton_2.clicked.connect(self.kmeansTable)
 #        self.loadButton.clicked.connect(self.openFileNamesDialog)
@@ -730,18 +731,17 @@ class Ui_MainWindow(object):
         fileNames , _ = QtWidgets.QFileDialog.getOpenFileNames(None, 'Open File', os.getenv('HOME'), "Musics (*.mp3 *.wav)")
         files = []
         names = []
-        if fileNames:
+        if len(fileNames) > 0:
 #            Just keep file names not path
             for i in range(0,len(fileNames)):
                 files.append(fileNames[i])
                 x = fileNames[i].split('/')
                 names.append(x[-1:][0])
         #return files, names
-        for i in range(len(names)):
-            dbImport.dbImport(names[i],files[i])
-            
-        normalize.normalize()
-        self.initFeaturesTable()
+            for i in range(len(names)):
+                dbImport.dbImport(names[i],files[i])
+            normalize.normalize()
+            self.initFeaturesTable()
         
     def openFileNamesDialog(self): 
         fileNames , _ = QtWidgets.QFileDialog.getOpenFileNames(None, 'Open File', os.getenv('HOME'), "Musics (*.mp3 *.wav)")
@@ -796,22 +796,23 @@ class Ui_MainWindow(object):
         import csv
         importData=[]
         fileNames , _ = QtWidgets.QFileDialog.getOpenFileNames(None, 'Open File', os.getenv('HOME'), "CSV Files (*.csv)")
-        with open('data.csv') as csvfile:
-            readCSV = csv.reader(csvfile, delimiter=',')
-            for row in readCSV:
-                print(row)
-                importData.append(row)
-                #print(row[0])
-                #print(row[0],row[1],row[2])
-               
-        import sqlite3
-        vt = sqlite3.connect('Functions\DB\DB.db')
-        print ('Opened database successfully')
-        conn=vt.cursor()
-        
-        for x in importData:
-            conn.execute("INSERT INTO Feature(NAME,mZcr,vZcr,mCentroid,vCentroid,mContrast,vContrast,mBandwidth,vBandwidth,mRollof,vRollof,mMFFC1,vMFFC1,mMFFC2,vMFFC2,mMFFC3,vMFFC3,mMFFC4,vMFFC4,mMFFC5,vMFFC5,mMFFC6,vMFFC6,mMFFC7,vMFFC7,mMFFC8,vMFFC8,mMFFC9,vMFFC9,mMFFC10,vMFFC10,mMFFC11,vMFFC11,mMFFC12,vMFFC12,mMFFC13,vMFFC13,mCqt1,vCqt1,mCqt2,vCqt2,mCqt3,vCqt3,mCqt4,vCqt4,mCqt5,vCqt5,mCqt6,vCqt6,mCqt7,vCqt7,mCqt8,vCqt8,mCqt9,vCqt9,mCqt10,vCqt10,mCqt11,vCqt11,mCqt12,vCqt12,mTonnetz1,vTonnetz1,mTonnetz2,vTonnetz2,mTonnetz3,vTonnetz3,mTonnetz4,vTonnetz4,mTonnetz5,vTonnetz5,mTonnetz6,vTonnetz6)  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", x)
-            vt.commit()
+        if len(fileNames) > 0:
+            with open(fileNames[0]) as csvfile:
+                readCSV = csv.reader(csvfile, delimiter=',')
+                for row in readCSV:
+                    print(row)
+                    importData.append(row)
+                    #print(row[0])
+                    #print(row[0],row[1],row[2])
+                   
+            import sqlite3
+            vt = sqlite3.connect('Functions\DB\DB.db')
+            print ('Opened database successfully')
+            conn=vt.cursor()
+            
+            for x in importData:
+                conn.execute("INSERT INTO Feature(NAME,mZcr,vZcr,mCentroid,vCentroid,mContrast,vContrast,mBandwidth,vBandwidth,mRollof,vRollof,mMFFC1,vMFFC1,mMFFC2,vMFFC2,mMFFC3,vMFFC3,mMFFC4,vMFFC4,mMFFC5,vMFFC5,mMFFC6,vMFFC6,mMFFC7,vMFFC7,mMFFC8,vMFFC8,mMFFC9,vMFFC9,mMFFC10,vMFFC10,mMFFC11,vMFFC11,mMFFC12,vMFFC12,mMFFC13,vMFFC13,mCqt1,vCqt1,mCqt2,vCqt2,mCqt3,vCqt3,mCqt4,vCqt4,mCqt5,vCqt5,mCqt6,vCqt6,mCqt7,vCqt7,mCqt8,vCqt8,mCqt9,vCqt9,mCqt10,vCqt10,mCqt11,vCqt11,mCqt12,vCqt12,mTonnetz1,vTonnetz1,mTonnetz2,vTonnetz2,mTonnetz3,vTonnetz3,mTonnetz4,vTonnetz4,mTonnetz5,vTonnetz5,mTonnetz6,vTonnetz6)  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", x)
+                vt.commit()
             
         self.initFeaturesTable()
         
@@ -822,10 +823,13 @@ class Ui_MainWindow(object):
         conn=vt.cursor()
         conn.execute("SELECT * FROM Feature")
         veriler = conn.fetchall()
+        
         import csv
         with open('data.csv','w') as f:
             writer = csv.writer(f, delimiter =',')
-            writer.writerows(veriler)
+            for x in veriler:
+                writer.writerow(x[1:])
+
     
     def connectDB(self):
         import sqlite3
@@ -954,7 +958,7 @@ class Ui_MainWindow(object):
             
         self.predictsTableWidget.setRowCount(0)    
         self.predictsTableWidget.setRowCount(t)
-        print(t)
+        self.predictsTableWidget.cellDoubleClicked.connect(self.playOnRecomm)
         self.predictsTableWidget.setColumnCount(k)
         self.predictsTableWidget.setHorizontalHeaderLabels(headers)
         self.predictsTableWidget.horizontalHeader().setStretchLastSection(True)
@@ -969,6 +973,24 @@ class Ui_MainWindow(object):
             item.setFlags(QtCore.Qt.ItemIsEnabled)
             self.predictsTableWidget.setItem(rowindex[Ltemp[i-1]]-1,Ltemp[i-1], item)
         self.predictsTableWidget.setRowCount(max(rowindex))
+        self.predictsTableWidget.horizontalHeader().setDefaultSectionSize(200)
+        # paint data table for recom. items
+        row = self.tablLayout1TableWidget.rowCount()
+        for i in range(row):
+            self.tablLayout1TableWidget.item(i,0).setBackground(QColor(255,255,255))
+        row = self.predictsTableWidget.rowCount()
+        col = self.predictsTableWidget.columnCount()
+        for j in range(col):
+            from random import randint
+            colorR = randint(0,255)
+            colorG = randint(0,255)
+            colorB = randint(0,255)
+            for i in range(row):
+                item = self.predictsTableWidget.item(i,j)
+                if item is not None:
+                    print("item: ",item.text())
+                    item = self.tablLayout1TableWidget.findItems(item.text(), QtCore.Qt.MatchExactly)[0]
+                    item.setBackground(QColor(colorR,colorG,colorB))
             
     def showFeatureOnNewTab(self, result):
         self.playSongButton.setEnabled(True)
