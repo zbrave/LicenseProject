@@ -709,20 +709,60 @@ class Ui_MainWindow(object):
         self.threadpool.start(worker)
     
     def openBrowser(self):
-        planets = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto']
+        res, ver = self.connectDB()
+        distanceMatrix_X = np.zeros((len(ver)))
+        distanceMatrix_Y = np.zeros((len(ver)))
+        distanceMatrix_Z = np.zeros((len(ver)))
+        print(np.array(ver[0][2:]))
+        planets = []
+        for i in range(len(ver)):
+            distanceMatrix_X[i]= np.linalg.norm(np.array(ver[i][2:26]))
+            distanceMatrix_Y[i]= np.linalg.norm(np.array(ver[i][26:50]))
+            distanceMatrix_Z[i]= np.linalg.norm(np.array(ver[i][50:]))
+            planets.append(ver[i][1])
+            
         planet_colors = ['rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
                          'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)','rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
                          'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)']
-        distance_from_sun = [57.9, 108.2, 149.6, 227.9, 778.6, 1433.5, 2872.5, 4495.1, 5906.4]
-        density = [5427, 5243, 5514, 3933, 1326, 687, 1271, 1638, 2095]
-        gravity = [3.7, 8.9, 9.8, 3.7, 23.1, 9.0, 8.7, 11.0, 0.7]
-        planet_diameter = [4879, 12104, 12756, 6792, 142984, 120536, 51118, 49528, 2370]
+        planet_diameter = 5000*np.ones((len(ver)))
         
         # Create trace, sizing bubbles by planet diameter
         trace1 = Scatter3d(
-            x = distance_from_sun,
-            y = density,
-            z = gravity,
+            x = distanceMatrix_X,
+            y = distanceMatrix_Y,
+            z = distanceMatrix_Z,
             text = planets,
             mode = 'markers',
             marker = dict(
@@ -734,12 +774,12 @@ class Ui_MainWindow(object):
         )
         data=[trace1]
         
-        layout=Layout(width=800, height=800, title = 'Planets!',
-                      scene = dict(xaxis=dict(title='Distance from Sun',
-                                              titlefont=dict(color='Orange')),
-                                    yaxis=dict(title='Density',
+        layout=Layout(width=1800, height=968, title = '3D Music Map',
+                      scene = dict(xaxis=dict(title='X',
+                                              titlefont=dict(color='rgb(220, 220, 220)')),
+                                    yaxis=dict(title='Y',
                                                titlefont=dict(color='rgb(220, 220, 220)')),
-                                    zaxis=dict(title='Gravity',
+                                    zaxis=dict(title='Z',
                                                titlefont=dict(color='rgb(220, 220, 220)')),
                                     bgcolor = 'rgb(20, 24, 54)'
                                    )
@@ -1108,7 +1148,7 @@ class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
 
     def __init__(self, parent=None, width=5, height=4, dpi=100, index=0):
-        fig = Figure(figsize=(width, height), dpi=dpi)
+        fig = matplotlib.figure.Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         self.compute_initial_figure(index)
         

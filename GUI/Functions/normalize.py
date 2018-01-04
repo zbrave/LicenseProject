@@ -39,7 +39,7 @@ def normalize():
         from sklearn import preprocessing
         
         for i in range(2,36):
-            trainData[:96,i]=preprocessing.normalize(trainData[:96,i], norm='l2') 
+            trainData[:veriler.__len__(),i]=preprocessing.normalize(trainData[:veriler.__len__(),i], norm='l2') 
         
         #X_normalized1 = preprocessing.normalize(trainData, norm='l1')
         
@@ -48,7 +48,7 @@ def normalize():
         i=1
         
         
-        for x in range(96):
+        for x in range(veriler.__len__()):
             b=np.array([[veriler[x][0]]])
             bak=trainData[x]
             bak=bak[np.newaxis]
