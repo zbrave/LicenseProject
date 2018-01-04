@@ -709,87 +709,50 @@ class Ui_MainWindow(object):
         self.threadpool.start(worker)
     
     def openBrowser(self):
+        planets = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto']
+        planet_colors = ['rgb(135, 135, 125)', 'rgb(210, 50, 0)', 'rgb(50, 90, 255)',
+                         'rgb(178, 0, 0)', 'rgb(235, 235, 210)', 'rgb(235, 205, 130)',
+                         'rgb(55, 255, 217)', 'rgb(38, 0, 171)', 'rgb(255, 255, 255)']
+        distance_from_sun = [57.9, 108.2, 149.6, 227.9, 778.6, 1433.5, 2872.5, 4495.1, 5906.4]
+        density = [5427, 5243, 5514, 3933, 1326, 687, 1271, 1638, 2095]
+        gravity = [3.7, 8.9, 9.8, 3.7, 23.1, 9.0, 8.7, 11.0, 0.7]
+        planet_diameter = [4879, 12104, 12756, 6792, 142984, 120536, 51118, 49528, 2370]
         
-        G=nx.random_geometric_graph(200,0.125)
-        pos=nx.get_node_attributes(G,'pos')
+        # Create trace, sizing bubbles by planet diameter
+        trace1 = Scatter3d(
+            x = distance_from_sun,
+            y = density,
+            z = gravity,
+            text = planets,
+            mode = 'markers',
+            marker = dict(
+                sizemode = 'diameter',
+                sizeref = 750, # info on sizeref: https://plot.ly/python/reference/#scatter-marker-sizeref
+                size = planet_diameter,
+                color = planet_colors,
+                )  
+        )
+        data=[trace1]
         
-        dmin=1
-        ncenter=0
-        for n in pos:
-            x,y=pos[n]
-            d=(x-0.5)**2+(y-0.5)**2
-            if d<dmin:
-                ncenter=n
-                dmin=d
+        layout=Layout(width=800, height=800, title = 'Planets!',
+                      scene = dict(xaxis=dict(title='Distance from Sun',
+                                              titlefont=dict(color='Orange')),
+                                    yaxis=dict(title='Density',
+                                               titlefont=dict(color='rgb(220, 220, 220)')),
+                                    zaxis=dict(title='Gravity',
+                                               titlefont=dict(color='rgb(220, 220, 220)')),
+                                    bgcolor = 'rgb(20, 24, 54)'
+                                   )
+                     )
         
-        p=nx.single_source_shortest_path_length(G,ncenter)
-        edge_trace = Scatter(
-            x=[],
-            y=[],
-            line=Line(width=0.5,color='#888'),
-            hoverinfo='none',
-            mode='lines')
-        
-        for edge in G.edges():
-            x0, y0 = G.node[edge[0]]['pos']
-            x1, y1 = G.node[edge[1]]['pos']
-            edge_trace['x'] += [x0, x1, None]
-            edge_trace['y'] += [y0, y1, None]
-        
-        node_trace = Scatter(
-            x=[],
-            y=[],
-            text=[],
-            mode='markers',
-            hoverinfo='text',
-            marker=Marker(
-                showscale=True,
-                # colorscale options
-                # 'Greys' | 'Greens' | 'Bluered' | 'Hot' | 'Picnic' | 'Portland' |
-                # Jet' | 'RdBu' | 'Blackbody' | 'Earth' | 'Electric' | 'YIOrRd' | 'YIGnBu'
-                colorscale='YIGnBu',
-                reversescale=True,
-                color=[],
-                size=10,
-                colorbar=dict(
-                    thickness=15,
-                    title='Node Connections',
-                    xanchor='left',
-                    titleside='right'
-                ),
-                line=dict(width=2)))
-        
-        for node in G.nodes():
-            x, y = G.node[node]['pos']
-            node_trace['x'].append(x)
-            node_trace['y'].append(y)
-            
-        for node, adjacencies in enumerate(G.adjacency_list()):
-            node_trace['marker']['color'].append(len(adjacencies))
-            node_info = '# of connections: '+str(len(adjacencies))
-            node_trace['text'].append(node_info)
-            
-        fig = Figure(data=Data([edge_trace, node_trace]),
-             layout=Layout(
-                title='<br>Network graph made with Python',
-                titlefont=dict(size=16),
-                showlegend=False,
-                hovermode='closest',
-                margin=dict(b=20,l=5,r=5,t=40),
-                annotations=[ dict(
-                    text="Python code: <a href='https://plot.ly/ipython-notebooks/network-graphs/'> https://plot.ly/ipython-notebooks/network-graphs/</a>",
-                    showarrow=False,
-                    xref="paper", yref="paper",
-                    x=0.005, y=-0.002 ) ],
-                xaxis=XAxis(showgrid=False, zeroline=False, showticklabels=False),
-                yaxis=YAxis(showgrid=False, zeroline=False, showticklabels=False)))
+        fig=dict(data=data, layout=layout)
 
         file_path = plotly.offline.plot(fig, filename='networkx')
-        print('path: ',file_path)
-        new = 2
+#        print('path: ',file_path)
+#        new = 2
 #        url = "file://"+os.path.join(os.getcwd(), "HelpFiles/temp-plot.html")
 
-        webbrowser.open(file_path,new=new)
+#        webbrowser.open(file_path,new=new)
         
     def execute_this_fn2(self, progress_callback):
         while(not player.is_playing()):
