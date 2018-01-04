@@ -202,6 +202,7 @@
     <addaction name="actionNew_Data_Import"/>
     <addaction name="actionPrepared_Data_Import_csv"/>
     <addaction name="actionPrepared_Data_Export_csv"/>
+    <addaction name="actionShow_Music_Map"/>
    </widget>
    <addaction name="fileOpMenu"/>
   </widget>
@@ -1080,6 +1081,15 @@ background-repeat: none;
    </property>
    <property name="text">
     <string>Prepared Data Export (csv)</string>
+   </property>
+  </action>
+  <action name="actionShow_Music_Map">
+   <property name="icon">
+    <iconset resource="Icons/Button-ico.qrc">
+     <normaloff>:/icons/Map-Marker-Marker-Outside-Chartreuse-icon.png</normaloff>:/icons/Map-Marker-Marker-Outside-Chartreuse-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Music Map</string>
    </property>
   </action>
  </widget>

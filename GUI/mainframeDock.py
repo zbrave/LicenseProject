@@ -32,6 +32,10 @@ from matplotlib.figure import Figure
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+import webbrowser
+import plotly
+from plotly.graph_objs import *
+import networkx as nx
 
 '''
 K değişkeni parametrik
@@ -541,9 +545,15 @@ class Ui_MainWindow(object):
         icon2.addPixmap(QtGui.QPixmap(":/icons/export-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionPrepared_Data_Export_csv.setIcon(icon2)
         self.actionPrepared_Data_Export_csv.setObjectName("actionPrepared_Data_Export_csv")
+        self.actionShow_Music_Map = QtWidgets.QAction(MainWindow)
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap(":/icons/Map-Marker-Marker-Outside-Chartreuse-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionShow_Music_Map.setIcon(icon3)
+        self.actionShow_Music_Map.setObjectName("actionShow_Music_Map")
         self.fileOpMenu.addAction(self.actionNew_Data_Import)
         self.fileOpMenu.addAction(self.actionPrepared_Data_Import_csv)
         self.fileOpMenu.addAction(self.actionPrepared_Data_Export_csv)
+        self.fileOpMenu.addAction(self.actionShow_Music_Map)
         self.menubar.addAction(self.fileOpMenu.menuAction())
         
         self.lineEdit_5.setValidator(QtGui.QIntValidator(1, 20))
@@ -556,6 +566,7 @@ class Ui_MainWindow(object):
         self.actionPrepared_Data_Export_csv.triggered.connect(self.exportCsv)
         self.horizontalSlider.sliderMoved.connect(self.setPosition)
         self.pushButton_2.clicked.connect(self.kmeansTable)
+        self.actionShow_Music_Map.triggered.connect(self.openBrowser)
 #        self.loadButton.clicked.connect(self.openFileNamesDialog)
         self.actionNew_Data_Import.triggered.connect(self.newDataImp)
         self.retranslateUi(MainWindow)
@@ -568,6 +579,36 @@ class Ui_MainWindow(object):
         self.loadMusicOnLaunch()
         self.initFeaturesTable()
         print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+        
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.checkBox_8.setText(_translate("MainWindow", "Tonnetz"))
+        self.checkBox_7.setText(_translate("MainWindow", "Chroma cqt"))
+        self.checkBox.setText(_translate("MainWindow", "Zero Crossing Rate"))
+        self.checkBox_2.setText(_translate("MainWindow", "Spectral Centroid"))
+        self.checkBox_4.setText(_translate("MainWindow", "Spectral Bandwidth"))
+        self.checkBox_3.setText(_translate("MainWindow", "Spectral Contrast"))
+        self.checkBox_5.setText(_translate("MainWindow", "Spectral Rolloff"))
+        self.checkBox_6.setText(_translate("MainWindow", "MFCC"))
+        self.label_3.setText(_translate("MainWindow", "Recommendations"))
+        self.fileOpMenu.setTitle(_translate("MainWindow", "File operations"))
+        self.label.setText(_translate("MainWindow", "Features"))
+        self.tablLayout1TableWidget.setSortingEnabled(False)
+        self.label_4.setText(_translate("MainWindow", "00:00"))
+        self.label_2.setText(_translate("MainWindow", "Playlist"))
+        self.songListWidget.setWhatsThis(_translate("MainWindow", "<html><head/><body><p><br/></p></body></html>"))
+        self.radioButton.setText(_translate("MainWindow", "kNN"))
+        self.pushButton_2.setText(_translate("MainWindow", "Kmeans"))
+        self.label_8.setText(_translate("MainWindow", "k value:"))
+        self.lineEdit_5.setText(_translate("MainWindow", "5"))
+#        self.tabLayout1Label.setText(_translate("MainWindow", "TextLabel"))
+#        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Tab 1"))
+#        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2"))
+        self.actionNew_Data_Import.setText(_translate("MainWindow", "New Data Import (mp3) "))
+        self.actionPrepared_Data_Import_csv.setText(_translate("MainWindow", "Prepared Data Import (csv) "))
+        self.actionPrepared_Data_Export_csv.setText(_translate("MainWindow", "Prepared Data Export (csv)"))
+        self.actionShow_Music_Map.setText(_translate("MainWindow", "Show Music Map"))
 
     def updateSlider(self):
         b = self.horizontalSlider.sliderPosition()+1
@@ -666,6 +707,89 @@ class Ui_MainWindow(object):
 
         # Execute
         self.threadpool.start(worker)
+    
+    def openBrowser(self):
+        
+        G=nx.random_geometric_graph(200,0.125)
+        pos=nx.get_node_attributes(G,'pos')
+        
+        dmin=1
+        ncenter=0
+        for n in pos:
+            x,y=pos[n]
+            d=(x-0.5)**2+(y-0.5)**2
+            if d<dmin:
+                ncenter=n
+                dmin=d
+        
+        p=nx.single_source_shortest_path_length(G,ncenter)
+        edge_trace = Scatter(
+            x=[],
+            y=[],
+            line=Line(width=0.5,color='#888'),
+            hoverinfo='none',
+            mode='lines')
+        
+        for edge in G.edges():
+            x0, y0 = G.node[edge[0]]['pos']
+            x1, y1 = G.node[edge[1]]['pos']
+            edge_trace['x'] += [x0, x1, None]
+            edge_trace['y'] += [y0, y1, None]
+        
+        node_trace = Scatter(
+            x=[],
+            y=[],
+            text=[],
+            mode='markers',
+            hoverinfo='text',
+            marker=Marker(
+                showscale=True,
+                # colorscale options
+                # 'Greys' | 'Greens' | 'Bluered' | 'Hot' | 'Picnic' | 'Portland' |
+                # Jet' | 'RdBu' | 'Blackbody' | 'Earth' | 'Electric' | 'YIOrRd' | 'YIGnBu'
+                colorscale='YIGnBu',
+                reversescale=True,
+                color=[],
+                size=10,
+                colorbar=dict(
+                    thickness=15,
+                    title='Node Connections',
+                    xanchor='left',
+                    titleside='right'
+                ),
+                line=dict(width=2)))
+        
+        for node in G.nodes():
+            x, y = G.node[node]['pos']
+            node_trace['x'].append(x)
+            node_trace['y'].append(y)
+            
+        for node, adjacencies in enumerate(G.adjacency_list()):
+            node_trace['marker']['color'].append(len(adjacencies))
+            node_info = '# of connections: '+str(len(adjacencies))
+            node_trace['text'].append(node_info)
+            
+        fig = Figure(data=Data([edge_trace, node_trace]),
+             layout=Layout(
+                title='<br>Network graph made with Python',
+                titlefont=dict(size=16),
+                showlegend=False,
+                hovermode='closest',
+                margin=dict(b=20,l=5,r=5,t=40),
+                annotations=[ dict(
+                    text="Python code: <a href='https://plot.ly/ipython-notebooks/network-graphs/'> https://plot.ly/ipython-notebooks/network-graphs/</a>",
+                    showarrow=False,
+                    xref="paper", yref="paper",
+                    x=0.005, y=-0.002 ) ],
+                xaxis=XAxis(showgrid=False, zeroline=False, showticklabels=False),
+                yaxis=YAxis(showgrid=False, zeroline=False, showticklabels=False)))
+
+        file_path = plotly.offline.plot(fig, filename='networkx')
+        print('path: ',file_path)
+        new = 2
+#        url = "file://"+os.path.join(os.getcwd(), "HelpFiles/temp-plot.html")
+
+        webbrowser.open(file_path,new=new)
         
     def execute_this_fn2(self, progress_callback):
         while(not player.is_playing()):
@@ -687,36 +811,6 @@ class Ui_MainWindow(object):
 
         # Execute
         self.threadpool.start(worker)
-        
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.checkBox_8.setText(_translate("MainWindow", "Tonnetz"))
-        self.checkBox_7.setText(_translate("MainWindow", "Chroma cqt"))
-        self.checkBox.setText(_translate("MainWindow", "Zero Crossing Rate"))
-        self.checkBox_2.setText(_translate("MainWindow", "Spectral Centroid"))
-        self.checkBox_4.setText(_translate("MainWindow", "Spectral Bandwidth"))
-        self.checkBox_3.setText(_translate("MainWindow", "Spectral Contrast"))
-        self.checkBox_5.setText(_translate("MainWindow", "Spectral Rolloff"))
-        self.checkBox_6.setText(_translate("MainWindow", "MFCC"))
-        self.label_3.setText(_translate("MainWindow", "Recommendations"))
-        self.fileOpMenu.setTitle(_translate("MainWindow", "File operations"))
-        self.label.setText(_translate("MainWindow", "Features"))
-        self.tablLayout1TableWidget.setSortingEnabled(False)
-        self.label_4.setText(_translate("MainWindow", "00:00"))
-        self.label_2.setText(_translate("MainWindow", "Playlist"))
-        self.songListWidget.setWhatsThis(_translate("MainWindow", "<html><head/><body><p><br/></p></body></html>"))
-        self.radioButton.setText(_translate("MainWindow", "kNN"))
-        self.pushButton_2.setText(_translate("MainWindow", "Kmeans"))
-        self.label_8.setText(_translate("MainWindow", "k value:"))
-        self.lineEdit_5.setText(_translate("MainWindow", "3"))
-#        self.tabLayout1Label.setText(_translate("MainWindow", "TextLabel"))
-#        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Tab 1"))
-#        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2"))
-        self.actionNew_Data_Import.setText(_translate("MainWindow", "New Data Import (mp3) "))
-        self.actionPrepared_Data_Import_csv.setText(_translate("MainWindow", "Prepared Data Import (csv) "))
-        self.actionPrepared_Data_Export_csv.setText(_translate("MainWindow", "Prepared Data Export (csv)"))
-
 
     def loadMusicOnLaunch(self):
         import glob

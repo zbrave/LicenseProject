@@ -441,9 +441,15 @@ class Ui_MainWindow(object):
         icon2.addPixmap(QtGui.QPixmap(":/icons/export-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionPrepared_Data_Export_csv.setIcon(icon2)
         self.actionPrepared_Data_Export_csv.setObjectName("actionPrepared_Data_Export_csv")
+        self.actionShow_Music_Map = QtWidgets.QAction(MainWindow)
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap(":/icons/Map-Marker-Marker-Outside-Chartreuse-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionShow_Music_Map.setIcon(icon3)
+        self.actionShow_Music_Map.setObjectName("actionShow_Music_Map")
         self.fileOpMenu.addAction(self.actionNew_Data_Import)
         self.fileOpMenu.addAction(self.actionPrepared_Data_Import_csv)
         self.fileOpMenu.addAction(self.actionPrepared_Data_Export_csv)
+        self.fileOpMenu.addAction(self.actionShow_Music_Map)
         self.menubar.addAction(self.fileOpMenu.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -476,5 +482,6 @@ class Ui_MainWindow(object):
         self.actionNew_Data_Import.setText(_translate("MainWindow", "New Data Import (mp3) "))
         self.actionPrepared_Data_Import_csv.setText(_translate("MainWindow", "Prepared Data Import (csv) "))
         self.actionPrepared_Data_Export_csv.setText(_translate("MainWindow", "Prepared Data Export (csv)"))
+        self.actionShow_Music_Map.setText(_translate("MainWindow", "Show Music Map"))
 
 import Button-ico_rc
