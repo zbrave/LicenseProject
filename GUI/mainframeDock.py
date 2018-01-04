@@ -533,11 +533,17 @@ class Ui_MainWindow(object):
         self.actionNew_Data_Import.setObjectName("actionNew_Data_Import")
         self.actionPrepared_Data_Import_csv = QtWidgets.QAction(MainWindow)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/icons/add-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(":/icons/import-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionPrepared_Data_Import_csv.setIcon(icon1)
         self.actionPrepared_Data_Import_csv.setObjectName("actionPrepared_Data_Import_csv")
+        self.actionPrepared_Data_Export_csv = QtWidgets.QAction(MainWindow)
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap(":/icons/export-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionPrepared_Data_Export_csv.setIcon(icon2)
+        self.actionPrepared_Data_Export_csv.setObjectName("actionPrepared_Data_Export_csv")
         self.fileOpMenu.addAction(self.actionNew_Data_Import)
         self.fileOpMenu.addAction(self.actionPrepared_Data_Import_csv)
+        self.fileOpMenu.addAction(self.actionPrepared_Data_Export_csv)
         self.menubar.addAction(self.fileOpMenu.menuAction())
         
         self.lineEdit_5.setValidator(QtGui.QIntValidator(1, 20))
@@ -708,6 +714,7 @@ class Ui_MainWindow(object):
 #        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2"))
         self.actionNew_Data_Import.setText(_translate("MainWindow", "New Data Import (mp3) "))
         self.actionPrepared_Data_Import_csv.setText(_translate("MainWindow", "Prepared Data Import (csv) "))
+        self.actionPrepared_Data_Export_csv.setText(_translate("MainWindow", "Prepared Data Export (csv)"))
 
 
     def loadMusicOnLaunch(self):
@@ -734,6 +741,7 @@ class Ui_MainWindow(object):
             dbImport.dbImport(names[i],files[i])
             
         normalize.normalize()
+        self.initFeaturesTable()
         
     def openFileNamesDialog(self): 
         fileNames , _ = QtWidgets.QFileDialog.getOpenFileNames(None, 'Open File', os.getenv('HOME'), "Musics (*.mp3 *.wav)")
@@ -804,7 +812,9 @@ class Ui_MainWindow(object):
         for x in importData:
             conn.execute("INSERT INTO Feature(NAME,mZcr,vZcr,mCentroid,vCentroid,mContrast,vContrast,mBandwidth,vBandwidth,mRollof,vRollof,mMFFC1,vMFFC1,mMFFC2,vMFFC2,mMFFC3,vMFFC3,mMFFC4,vMFFC4,mMFFC5,vMFFC5,mMFFC6,vMFFC6,mMFFC7,vMFFC7,mMFFC8,vMFFC8,mMFFC9,vMFFC9,mMFFC10,vMFFC10,mMFFC11,vMFFC11,mMFFC12,vMFFC12,mMFFC13,vMFFC13,mCqt1,vCqt1,mCqt2,vCqt2,mCqt3,vCqt3,mCqt4,vCqt4,mCqt5,vCqt5,mCqt6,vCqt6,mCqt7,vCqt7,mCqt8,vCqt8,mCqt9,vCqt9,mCqt10,vCqt10,mCqt11,vCqt11,mCqt12,vCqt12,mTonnetz1,vTonnetz1,mTonnetz2,vTonnetz2,mTonnetz3,vTonnetz3,mTonnetz4,vTonnetz4,mTonnetz5,vTonnetz5,mTonnetz6,vTonnetz6)  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", x)
             vt.commit()
-
+            
+        self.initFeaturesTable()
+        
     def exportCsv(self):
         import sqlite3
         vt = sqlite3.connect('Functions\DB\DB.db')

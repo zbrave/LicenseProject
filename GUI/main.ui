@@ -201,6 +201,7 @@
     </property>
     <addaction name="actionNew_Data_Import"/>
     <addaction name="actionPrepared_Data_Import_csv"/>
+    <addaction name="actionPrepared_Data_Export_csv"/>
    </widget>
    <addaction name="fileOpMenu"/>
   </widget>
@@ -1066,10 +1067,19 @@ background-repeat: none;
   <action name="actionPrepared_Data_Import_csv">
    <property name="icon">
     <iconset resource="Icons/Button-ico.qrc">
-     <normaloff>:/icons/add-icon.png</normaloff>:/icons/add-icon.png</iconset>
+     <normaloff>:/icons/import-icon.png</normaloff>:/icons/import-icon.png</iconset>
    </property>
    <property name="text">
     <string>Prepared Data Import (csv) </string>
+   </property>
+  </action>
+  <action name="actionPrepared_Data_Export_csv">
+   <property name="icon">
+    <iconset resource="Icons/Button-ico.qrc">
+     <normaloff>:/icons/export-icon.png</normaloff>:/icons/export-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Prepared Data Export (csv)</string>
    </property>
   </action>
  </widget>

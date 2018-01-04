@@ -433,11 +433,17 @@ class Ui_MainWindow(object):
         self.actionNew_Data_Import.setObjectName("actionNew_Data_Import")
         self.actionPrepared_Data_Import_csv = QtWidgets.QAction(MainWindow)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/icons/add-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(":/icons/import-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionPrepared_Data_Import_csv.setIcon(icon1)
         self.actionPrepared_Data_Import_csv.setObjectName("actionPrepared_Data_Import_csv")
+        self.actionPrepared_Data_Export_csv = QtWidgets.QAction(MainWindow)
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap(":/icons/export-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionPrepared_Data_Export_csv.setIcon(icon2)
+        self.actionPrepared_Data_Export_csv.setObjectName("actionPrepared_Data_Export_csv")
         self.fileOpMenu.addAction(self.actionNew_Data_Import)
         self.fileOpMenu.addAction(self.actionPrepared_Data_Import_csv)
+        self.fileOpMenu.addAction(self.actionPrepared_Data_Export_csv)
         self.menubar.addAction(self.fileOpMenu.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -469,5 +475,6 @@ class Ui_MainWindow(object):
         self.songListWidget.setWhatsThis(_translate("MainWindow", "<html><head/><body><p><br/></p></body></html>"))
         self.actionNew_Data_Import.setText(_translate("MainWindow", "New Data Import (mp3) "))
         self.actionPrepared_Data_Import_csv.setText(_translate("MainWindow", "Prepared Data Import (csv) "))
+        self.actionPrepared_Data_Export_csv.setText(_translate("MainWindow", "Prepared Data Export (csv)"))
 
 import Button-ico_rc

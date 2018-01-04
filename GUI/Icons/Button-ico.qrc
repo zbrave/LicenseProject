@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="icons">
+    <file>export-icon.png</file>
+    <file>import-icon.png</file>
     <file>Pause-icon64.png</file>
     <file>Pause-icon64disabled.png</file>
     <file>Play-icon64.png</file>
